@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useProposalContext } from "../../context/ProposalContext";
 import { usePricing } from "../../hooks/usePricing";
 
@@ -17,14 +17,86 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
     formatCurrency,
   } = usePricing();
 
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    // Save the original overflow value
+    const originalOverflow = document.body.style.overflow;
+
+    // Prevent scrolling on mount
+    document.body.style.overflow = "hidden";
+
+    // Re-enable scrolling on unmount
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  // Function to calculate price impact for each subelement
+  const calculateSubElementPrice = (component: any, subElement: any) => {
+    if (!subElement.priceImpact) return 0;
+
+    if (subElement.type === "quantity" && subElement.value) {
+      let itemPrice = subElement.priceImpact * (subElement.value || 0);
+
+      // Apply volume discount for Power Hour
+      if (
+        subElement.hasVolumeDiscount &&
+        component.baseId === "powerHour" &&
+        subElement.id === "hours"
+      ) {
+        const hours = subElement.value || 0;
+        if (hours >= 10) {
+          // 10% discount for 10+ hours
+          itemPrice = itemPrice * 0.9;
+        } else if (hours >= 5) {
+          // 5% discount for 5-9 hours
+          itemPrice = itemPrice * 0.95;
+        }
+      }
+
+      return itemPrice;
+    } else if (subElement.type === "boolean" && subElement.value) {
+      return subElement.priceImpact;
+    } else if (
+      subElement.type === "selection" &&
+      subElement.value &&
+      subElement.priceImpact
+    ) {
+      // For selections with multipliers
+      if (typeof subElement.value === "number" && subElement.value > 0) {
+        return subElement.priceImpact * subElement.value;
+      } else {
+        return subElement.priceImpact;
+      }
+    }
+    return 0;
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-3/4 max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      }}
+    >
+      <div
+        className="bg-white rounded-lg shadow-2xl w-11/12 md:w-3/4 max-w-4xl flex flex-col"
+        style={{
+          maxHeight: "90vh",
+          position: "relative",
+          top: "0",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center"
+          style={{ position: "sticky", top: 0, zIndex: 10 }}
+        >
           <h2 className="text-xl font-semibold">Proposal Preview</h2>
           <button
             onClick={onClose}
-            className="text-white hover:text-blue-200 transition-colors"
+            className="text-white hover:text-blue-200 transition-colors p-2"
             aria-label="Close"
           >
             <svg
@@ -44,12 +116,15 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-grow">
-          <div className="proposal-preview">
-            <h1 className="text-2xl font-bold mb-6">Project Proposal</h1>
+        <div
+          className="overflow-y-auto"
+          style={{ maxHeight: "calc(90vh - 140px)" }}
+        >
+          <div className="proposal-preview p-6">
+            <h1 className="text-2xl font-bold mb-4">Project Proposal</h1>
 
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 border-b pb-2">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-3 border-b pb-2">
                 Components
               </h2>
 
@@ -58,79 +133,116 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
                   (c) =>
                     c.baseId !== "contingency" && c.baseId !== "genericInfo"
                 )
-                .map((component) => (
-                  <div
-                    key={component.instanceId}
-                    className="mb-6 p-4 border border-gray-200 rounded-lg"
-                  >
-                    <h3 className="text-lg font-medium mb-2">
-                      {component.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      {component.description}
-                    </p>
+                .map((component) => {
+                  // Get price breakdown
+                  const componentPrice = calculateComponentPrice(component);
 
-                    {component.subElements.length > 0 && (
-                      <div className="mt-3">
-                        <h4 className="text-sm font-medium mb-2">
-                          Configuration:
-                        </h4>
-                        <ul className="text-sm text-gray-600 space-y-1 ml-4">
-                          {component.subElements.map((sub) => {
-                            let valueDisplay = "";
+                  // Get active sub elements with their prices
+                  const activeSubElements = component.subElements.filter(
+                    (sub) => {
+                      const price = calculateSubElementPrice(component, sub);
+                      return price > 0;
+                    }
+                  );
 
-                            if (sub.type === "boolean") {
-                              valueDisplay = sub.value ? "Yes" : "No";
-                            } else if (
-                              sub.type === "selection" &&
-                              sub.options
-                            ) {
-                              const option = sub.options.find(
-                                (opt) => opt.value === sub.value
+                  return (
+                    <div
+                      key={component.instanceId}
+                      className="mb-4 p-3 border border-gray-200 rounded-lg"
+                    >
+                      <h3 className="text-lg font-medium mb-1">
+                        {component.name}
+                      </h3>
+                      <p className="text-gray-600 mb-2 text-sm">
+                        {component.description}
+                      </p>
+
+                      {/* Simplified configuration - only show selected/non-zero values */}
+                      {activeSubElements.length > 0 && (
+                        <div className="mt-2">
+                          <h4 className="text-sm font-medium mb-1">
+                            Configuration & Price:
+                          </h4>
+                          <div className="border-t pt-2">
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Base Price:</span>
+                              <span className="font-medium">
+                                {formatCurrency(component.basePrice)}
+                              </span>
+                            </div>
+
+                            {activeSubElements.map((sub) => {
+                              const price = calculateSubElementPrice(
+                                component,
+                                sub
                               );
-                              valueDisplay = option ? option.label : "";
-                            } else {
-                              valueDisplay = String(sub.value || 0);
-                            }
 
-                            return (
-                              <li key={sub.id} className="flex justify-between">
-                                <span>{sub.name}:</span>
-                                <span className="font-medium">
-                                  {valueDisplay}
-                                </span>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    )}
+                              // Only show addons with price impact
+                              if (price <= 0) return null;
 
-                    <div className="mt-4 text-right">
-                      <span className="font-medium">
-                        {formatCurrency(calculateComponentPrice(component))}
-                      </span>
+                              let valueDisplay = "";
+                              if (sub.type === "boolean") {
+                                valueDisplay = "";
+                              } else if (
+                                sub.type === "selection" &&
+                                sub.options
+                              ) {
+                                const option = sub.options.find(
+                                  (opt) => opt.value === sub.value
+                                );
+                                valueDisplay = option
+                                  ? ` (${option.label})`
+                                  : "";
+                              } else if (sub.type === "quantity") {
+                                valueDisplay = ` (${sub.value})`;
+                              }
+
+                              return (
+                                <div
+                                  key={sub.id}
+                                  className="flex justify-between text-sm"
+                                >
+                                  <span>
+                                    {sub.name}
+                                    {valueDisplay}:
+                                  </span>
+                                  <span className="font-medium text-blue-600">
+                                    +{formatCurrency(price)}
+                                  </span>
+                                </div>
+                              );
+                            })}
+
+                            <div className="flex justify-between mt-2 pt-2 border-t">
+                              <span className="font-semibold">Total:</span>
+                              <span className="font-bold text-base">
+                                {formatCurrency(componentPrice)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
 
-            <div className="pricing-summary border-t pt-4">
-              <div className="flex justify-between text-lg mb-2">
+            <div className="pricing-summary border-t pt-3 mb-4">
+              <div className="flex justify-between text-lg mb-1">
                 <span>Subtotal:</span>
                 <span className="font-medium">
                   {formatCurrency(calculateSubtotal())}
                 </span>
               </div>
 
-              <div className="flex justify-between text-lg mb-2">
+              <div className="flex justify-between text-lg mb-1">
                 <span>Contingency:</span>
                 <span className="font-medium">
                   {formatCurrency(calculateContingency())}
                 </span>
               </div>
 
-              <div className="flex justify-between text-xl font-bold border-t pt-4 mt-2">
+              <div className="flex justify-between text-xl font-bold border-t pt-3 mt-1">
                 <span>Total:</span>
                 <span>{formatCurrency(calculateTotal())}</span>
               </div>
@@ -138,7 +250,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
           </div>
         </div>
 
-        <div className="bg-gray-100 px-6 py-4 flex justify-end space-x-4">
+        <div
+          className="bg-gray-100 px-6 py-4 flex justify-end space-x-4 border-t"
+          style={{ position: "sticky", bottom: 0, zIndex: 10 }}
+        >
           <button
             onClick={() => onDownload("pdf")}
             className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors"
