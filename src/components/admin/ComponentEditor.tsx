@@ -68,6 +68,8 @@ const ComponentEditor: React.FC = () => {
     useState<boolean>(false);
   const [showBackupModal, setShowBackupModal] = useState<boolean>(false);
   const [backupsCount, setBackupsCount] = useState<number>(0);
+  const [originalComponent, setOriginalComponent] =
+    useState<ComponentSchema | null>(null);
 
   // Fetch component libraries from JSON file
   useEffect(() => {
@@ -141,6 +143,7 @@ const ComponentEditor: React.FC = () => {
   };
 
   const handleComponentSelect = (component: ComponentSchema) => {
+    setOriginalComponent(JSON.parse(JSON.stringify(component)));
     setSelectedComponent(component);
     setJsonError("");
     setValidationErrors([]);
@@ -481,7 +484,7 @@ const ComponentEditor: React.FC = () => {
 
     return (
       <div className="modal-overlay">
-        <div className="modal-content">
+        <div className="modal-content" style={{ maxWidth: "700px" }}>
           <div className="modal-header">
             <h3>{editingSubElementIndex >= 0 ? "Edit" : "Add"} Sub-Element</h3>
             <button
@@ -494,33 +497,35 @@ const ComponentEditor: React.FC = () => {
           </div>
 
           <div className="modal-body">
-            <div className="form-group">
-              <label>Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={element.name}
-                onChange={handleElementChange}
-                placeholder="Enter element name"
-              />
-              <div className="field-hint">
-                Descriptive name for this configuration option
+            <div className="form-row">
+              <div className="form-group">
+                <label>Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={element.name}
+                  onChange={handleElementChange}
+                  placeholder="Enter element name"
+                />
+                <div className="field-hint">
+                  Descriptive name for this configuration option
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Type:</label>
-              <select
-                name="type"
-                value={element.type}
-                onChange={handleTypeChange}
-              >
-                <option value="quantity">Quantity (number)</option>
-                <option value="boolean">Boolean (on/off)</option>
-                <option value="selection">Selection (dropdown)</option>
-              </select>
-              <div className="field-hint">
-                Determines how this option behaves in the proposal
+              <div className="form-group">
+                <label>Type:</label>
+                <select
+                  name="type"
+                  value={element.type}
+                  onChange={handleTypeChange}
+                >
+                  <option value="quantity">Quantity (number)</option>
+                  <option value="boolean">Boolean (on/off)</option>
+                  <option value="selection">Selection (dropdown)</option>
+                </select>
+                <div className="field-hint">
+                  Determines how this option behaves in the proposal
+                </div>
               </div>
             </div>
 
@@ -618,7 +623,10 @@ const ComponentEditor: React.FC = () => {
                 <div className="field-hint">
                   Define the choices available in the dropdown
                 </div>
-                <div className="options-list">
+                <div
+                  className="options-list"
+                  style={{ maxHeight: "200px", overflowY: "auto" }}
+                >
                   {element.options && element.options.length > 0 ? (
                     element.options.map((option, index) => (
                       <div key={index} className="option-item">
@@ -744,6 +752,21 @@ const ComponentEditor: React.FC = () => {
     }
   };
 
+  // Handle cancel - just clear the editor
+  const handleCancel = () => {
+    if (selectedComponent) {
+      // Confirm with user if they want to close the editor
+      if (
+        window.confirm("Close the editor? Any unsaved changes will be lost.")
+      ) {
+        // Clear the selected component (but don't remove from library)
+        setSelectedComponent(null);
+        setValidationErrors([]);
+        setJsonError("");
+      }
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading component libraries...</div>;
   }
@@ -837,9 +860,14 @@ const ComponentEditor: React.FC = () => {
                       <span className="icon">{}</span> JSON View
                     </button>
                   </div>
-                  <button className="save-btn" onClick={handleSave}>
-                    Save Changes
-                  </button>
+                  <div className="toolbar-actions">
+                    <button className="cancel-btn" onClick={handleCancel}>
+                      Close Editor
+                    </button>
+                    <button className="save-btn" onClick={handleSave}>
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
 
                 {validationErrors.length > 0 && (
@@ -896,14 +924,47 @@ const ComponentEditor: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="form-group">
-                        <label>Name:</label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={selectedComponent.name}
-                          onChange={handleFormChange}
-                        />
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Name:</label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={selectedComponent.name}
+                            onChange={handleFormChange}
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Base Price (£):</label>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            <input
+                              type="number"
+                              name="basePrice"
+                              value={selectedComponent.basePrice}
+                              onChange={handleFormChange}
+                              style={{ flex: "1" }}
+                            />
+                            <div className="checkbox-wrapper">
+                              <input
+                                type="checkbox"
+                                id="allowMultiple"
+                                name="allowMultiple"
+                                checked={
+                                  selectedComponent.allowMultiple || false
+                                }
+                                onChange={handleFormChange}
+                              />
+                              <label htmlFor="allowMultiple">Multiple</label>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="form-group">
@@ -912,33 +973,18 @@ const ComponentEditor: React.FC = () => {
                           name="description"
                           value={selectedComponent.description}
                           onChange={handleFormChange}
+                          className="enhanced-textarea"
+                          placeholder="Enter a detailed description of the component..."
+                          rows={6}
                         />
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Base Price (£):</label>
-                          <input
-                            type="number"
-                            name="basePrice"
-                            value={selectedComponent.basePrice}
-                            onChange={handleFormChange}
-                          />
-                        </div>
-
-                        <div className="form-group checkbox">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="allowMultiple"
-                              checked={selectedComponent.allowMultiple || false}
-                              onChange={handleFormChange}
-                            />
-                            Allow Multiple Instances
-                          </label>
-                          <div className="field-hint">
-                            Can add multiple copies to a proposal
-                          </div>
+                        <div className="field-hint">
+                          Provide a clear, detailed description of this
+                          component's purpose and what it delivers.
+                          {selectedComponent.description && (
+                            <span className="character-count">
+                              {selectedComponent.description.length} characters
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1022,7 +1068,14 @@ const ComponentEditor: React.FC = () => {
                           <h3>Metadata</h3>
                         </div>
 
-                        <div className="metadata-inputs">
+                        <div
+                          className="metadata-inputs"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(3, 1fr)",
+                            gap: "1rem",
+                          }}
+                        >
                           <div className="form-group">
                             <label>Inputs:</label>
                             <textarea
@@ -1036,6 +1089,7 @@ const ComponentEditor: React.FC = () => {
                               }
                               placeholder="Enter each input on a new line"
                               className="metadata-textarea"
+                              rows={5}
                             />
                           </div>
 
@@ -1051,6 +1105,7 @@ const ComponentEditor: React.FC = () => {
                               }
                               placeholder="Enter each tool on a new line"
                               className="metadata-textarea"
+                              rows={5}
                             />
                           </div>
 
@@ -1067,10 +1122,14 @@ const ComponentEditor: React.FC = () => {
                               }
                               placeholder="Enter each output on a new line"
                               className="metadata-textarea"
+                              rows={5}
                             />
                           </div>
 
-                          <div className="form-group">
+                          <div
+                            className="form-group"
+                            style={{ gridColumn: "1 / -1" }}
+                          >
                             <label>Examples:</label>
                             <textarea
                               value={
