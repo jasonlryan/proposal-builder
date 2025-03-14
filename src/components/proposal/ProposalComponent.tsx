@@ -1,31 +1,32 @@
 import React from "react";
-import {
-  useProposalContext,
-  ProposalComponent as ProposalComponentType,
-} from "../../context/ProposalContext";
+import { ProposalComponent as ProposalComponentType } from "../../context/ProposalContext";
 import { usePricing } from "../../hooks/usePricing";
 import SubElementConfig from "./SubElementConfig";
+import "../styles/price-indicators.css";
 
 interface ProposalComponentProps {
   component: ProposalComponentType;
+  onRemove: (instanceId: string) => void;
 }
 
-const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
-  const { removeComponent } = useProposalContext();
+const ProposalComponent: React.FC<ProposalComponentProps> = ({
+  component,
+  onRemove,
+}) => {
   const { calculateComponentPrice, formatCurrency } = usePricing();
 
-  const componentPrice = calculateComponentPrice(component);
+  // Calculate total price for this component
+  const totalPrice = calculateComponentPrice(component);
 
   return (
     <div
       className="proposal-component"
       style={{
         backgroundColor: "white",
-        border: "1px solid #e5e7eb",
-        borderRadius: "0.5rem",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        borderRadius: "0.375rem",
         padding: "1rem",
-        transition: "all 0.2s ease",
+        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        border: "1px solid #e5e7eb",
       }}
     >
       <div
@@ -33,16 +34,15 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          marginBottom: "0.75rem",
         }}
       >
         <div>
           <h3
             style={{
-              fontWeight: 600,
-              color: "#1f2937",
-              fontSize: "1rem",
-              marginBottom: "0.25rem",
+              fontSize: "1.125rem",
+              fontWeight: "500",
+              marginBottom: "0.5rem",
+              color: "#111827",
             }}
           >
             {component.name}
@@ -50,27 +50,34 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
           <p
             style={{
               fontSize: "0.875rem",
-              color: "#6b7280",
+              color: "#4b5563",
+              marginBottom: "0.5rem",
             }}
           >
             {component.description}
           </p>
+          <div className="price-breakdown">
+            <div className="base-price">
+              Base Price: {formatCurrency(component.basePrice)}
+              {totalPrice > component.basePrice && (
+                <span className="price-indicator add-on-price">
+                  (+ {formatCurrency(totalPrice - component.basePrice)} in
+                  add-ons)
+                </span>
+              )}
+            </div>
+            <div className="total-price">
+              Total: {formatCurrency(totalPrice)}
+            </div>
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              color: "var(--bn-blue)",
-              fontWeight: 500,
-              marginRight: "1rem",
-            }}
-          >
-            {formatCurrency(componentPrice)}
-          </span>
+
+        <div>
           <button
-            onClick={() => removeComponent(component.instanceId)}
+            onClick={() => onRemove(component.instanceId)}
             style={{
               color: "#ef4444",
-              backgroundColor: "transparent",
+              background: "transparent",
               border: "none",
               padding: "0.25rem",
               cursor: "pointer",

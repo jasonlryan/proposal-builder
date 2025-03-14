@@ -3,6 +3,8 @@ import {
   useProposalContext,
   ProposalSubElement,
 } from "../../context/ProposalContext";
+import { usePricing } from "../../hooks/usePricing";
+import "../styles/price-indicators.css";
 
 interface SubElementConfigProps {
   instanceId: string;
@@ -15,6 +17,17 @@ const SubElementConfig: React.FC<SubElementConfigProps> = ({
 }) => {
   const { updateSubElementValue, incrementSubElement, decrementSubElement } =
     useProposalContext();
+  const { formatCurrency } = usePricing();
+
+  // Helper function to format price impact
+  const formatPriceImpact = (amount: number) => {
+    if (amount === 0) return "";
+    return (
+      <span className="price-indicator add-on-price">{`(+${formatCurrency(
+        amount
+      )})`}</span>
+    );
+  };
 
   // Render different input types based on sub-element type
   const renderInputControl = () => {
@@ -72,6 +85,7 @@ const SubElementConfig: React.FC<SubElementConfigProps> = ({
                 />
               </svg>
             </button>
+            {formatPriceImpact(subElement.priceImpact)}
           </div>
         );
 
@@ -91,6 +105,7 @@ const SubElementConfig: React.FC<SubElementConfigProps> = ({
               }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
+            {subElement.value && formatPriceImpact(subElement.priceImpact)}
           </div>
         );
 
@@ -109,11 +124,21 @@ const SubElementConfig: React.FC<SubElementConfigProps> = ({
               }}
               className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
             >
-              {subElement.options?.map((option) => (
-                <option key={option.label} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {subElement.options?.map((option) => {
+                // For selection options, we need to determine if the price impact
+                // is a multiplier (when value is a number) or a fixed amount
+                let optionPrice = subElement.priceImpact;
+                if (typeof option.value === "number" && option.value > 0) {
+                  optionPrice = subElement.priceImpact * option.value;
+                }
+
+                return (
+                  <option key={option.label} value={option.value}>
+                    {option.label}{" "}
+                    {optionPrice > 0 ? `(+${formatCurrency(optionPrice)})` : ""}
+                  </option>
+                );
+              })}
             </select>
           </div>
         );
