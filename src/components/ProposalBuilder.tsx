@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLibraryContext } from "../context/LibraryContext";
 import { useProposalContext } from "../context/ProposalContext";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { usePricing } from "../hooks/usePricing";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import LibrarySelector from "./library/LibrarySelector";
 import ComponentLibrary from "./library/ComponentLibrary";
 import ProposalFrame from "./proposal/ProposalFrame";

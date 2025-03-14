@@ -4,11 +4,13 @@ import { useComponentLibrary } from "../../hooks/useComponentLibrary";
 import ComponentCard from "./ComponentCard";
 
 const ComponentLibrary: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { selectedLibrary, availableComponents, isLoading } =
     useLibraryContext();
   const { getCurrentLibraryDescription } = useComponentLibrary();
 
   // Function to format library name and ensure AI-B-C is in capitals
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatLibraryName = (name: string) => {
     return name.replace(/ai-b-c/i, "AI-B-C");
   };
