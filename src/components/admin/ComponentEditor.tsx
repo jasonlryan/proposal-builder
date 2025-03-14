@@ -5,6 +5,8 @@ import {
   createEmptySubElement,
 } from "../../utils/schema";
 import "../../components/styles/admin.css";
+import { saveComponentData, downloadComponentData } from "../../api/fileOps";
+import BackupManager from "./BackupManager";
 
 interface Library {
   id: string;
@@ -145,7 +147,7 @@ const ComponentEditor: React.FC = () => {
     setShowMetadataSection(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!selectedComponent) return;
 
     // Validate before saving
@@ -157,17 +159,72 @@ const ComponentEditor: React.FC = () => {
       return;
     }
 
-    // In a real implementation, this would save to backend/JSON file
-    // For prototype, we'll just update the local state
-    setComponents((prev) =>
-      prev.map((comp) =>
-        comp.id === selectedComponent.id ? selectedComponent : comp
-      )
+    // Update the component in the local state
+    const updatedComponents = components.map((comp) =>
+      comp.id === selectedComponent.id ? selectedComponent : comp
     );
+    setComponents(updatedComponents);
 
-    alert(
-      "Component saved successfully! (In a real implementation, this would update the JSON file)"
+    // Find the current library
+    const currentLibrary = libraries.find(
+      (lib) => lib.id === selectedLibraryId
     );
+    if (!currentLibrary) {
+      alert("Library not found");
+      return;
+    }
+
+    // Create the updated library data
+    const updatedLibrary = {
+      ...currentLibrary,
+      components: updatedComponents,
+    };
+
+    // Create the full updated component libraries object
+    const updatedData = {
+      componentLibraries: {
+        ...libraries.reduce<Record<string, Library>>((acc, lib) => {
+          if (lib.id === selectedLibraryId) {
+            acc[lib.id] = updatedLibrary;
+          } else {
+            acc[lib.id] = lib;
+          }
+          return acc;
+        }, {}),
+      },
+    };
+
+    try {
+      // Try to save to the server
+      const result = await saveComponentData(updatedData);
+
+      if (result.success) {
+        alert(
+          `Component saved successfully! ${
+            result.backupCreated ? `Backup created: ${result.backupName}` : ""
+          }`
+        );
+      } else {
+        // If server-side save fails, offer to download the file
+        if (
+          window.confirm(
+            "Failed to save to server. Would you like to download the updated JSON file instead?"
+          )
+        ) {
+          downloadComponentData(updatedData);
+        }
+      }
+    } catch (error) {
+      console.error("Error saving component data:", error);
+      // Offer to download as a fallback
+      if (
+        window.confirm(
+          "Error saving to server. Would you like to download the updated JSON file instead?"
+        )
+      ) {
+        downloadComponentData(updatedData);
+      }
+    }
   };
 
   const handleFormChange = (
@@ -616,6 +673,45 @@ const ComponentEditor: React.FC = () => {
     );
   };
 
+  // Add a method to handle data restoration
+  const handleRestoreData = (restoredData: any) => {
+    if (!restoredData || !restoredData.componentLibraries) {
+      alert("Invalid restored data format");
+      return;
+    }
+
+    // Convert the restored data back to our library array format
+    const restoredLibraries = Object.entries(
+      restoredData.componentLibraries
+    ).map(([id, libraryData]: [string, any]) => ({
+      id,
+      name: libraryData.name,
+      description: libraryData.description,
+      components: libraryData.components,
+    }));
+
+    // Update the libraries state
+    setLibraries(restoredLibraries);
+
+    // Reset the selected component
+    setSelectedComponent(null);
+
+    // If the current library still exists, update its components
+    const currentLib = restoredLibraries.find(
+      (lib) => lib.id === selectedLibraryId
+    );
+    if (currentLib) {
+      setComponents(currentLib.components || []);
+    } else if (restoredLibraries.length > 0) {
+      // If current library doesn't exist anymore, select the first one
+      setSelectedLibraryId(restoredLibraries[0].id);
+      setComponents(restoredLibraries[0].components || []);
+    } else {
+      // If no libraries exist
+      setComponents([]);
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading component libraries...</div>;
   }
@@ -641,30 +737,39 @@ const ComponentEditor: React.FC = () => {
       <div className="editor-layout three-column">
         {/* Left column - Component libraries and list */}
         <div className="editor-sidebar">
-          <div className="library-selector">
-            <label>Component Library:</label>
-            <select
-              value={selectedLibraryId}
-              onChange={handleLibraryChange}
-              className="library-select"
-            >
-              {libraries.map((lib) => (
-                <option key={lib.id} value={lib.id}>
-                  {lib.name}
-                </option>
-              ))}
-            </select>
-            <button className="add-library-btn">+ Add New Library</button>
+          <div className="panel-header">
+            <h3>Library Selection</h3>
+          </div>
+          <div className="library-selector-container">
+            <div className="form-group library-select-group">
+              <label>Component Library:</label>
+              <select
+                value={selectedLibraryId}
+                onChange={handleLibraryChange}
+                className="library-select"
+              >
+                {libraries.map((lib) => (
+                  <option key={lib.id} value={lib.id}>
+                    {lib.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button className="action-btn add-library-btn">
+              <span className="btn-icon">+</span>
+              <span className="btn-text">Add New Library</span>
+            </button>
           </div>
 
           <div className="component-list">
             <div className="list-header">
               <h3>Components</h3>
               <button
-                className="add-component-btn"
+                className="action-btn add-component-btn"
                 onClick={handleCreateNewComponent}
               >
-                + New
+                <span className="btn-icon">+</span>
+                <span className="btn-text">New</span>
               </button>
             </div>
 
@@ -1063,6 +1168,8 @@ const ComponentEditor: React.FC = () => {
         or JSON View for advanced editing. Component changes are only saved when
         you click "Save Changes".
       </div>
+
+      <BackupManager onRestoreComplete={handleRestoreData} />
 
       {showSubElementModal && <SubElementModal />}
     </div>
