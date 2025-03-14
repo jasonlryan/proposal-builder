@@ -78,20 +78,26 @@
   display: grid;
   grid-template-columns: 280px 1fr 280px;
   gap: 25px;
-  height: 100%;
+  height: calc(100vh - 260px) !important;
+  min-height: calc(100vh - 260px) !important;
+  max-height: calc(100vh - 260px) !important;
   margin: 0;
   padding-top: var(--page-padding);
+  padding-bottom: 0;
+  overflow: hidden !important;
 }
 
 .editor-sidebar {
   width: 280px;
-  border-right: 1px solid var(--border-color);
-  background-color: var(--sidebar-bg);
-  border-right: none;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
 .library-selector-container {
@@ -161,6 +167,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
+  max-height: 100%;
 }
 
 .list-header {
@@ -181,8 +189,10 @@
 
 .component-items {
   padding: 1rem;
-  overflow-y: auto;
-  max-height: calc(100% - 80px);
+  overflow-y: auto !important;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
 }
 
 .component-item {
@@ -190,6 +200,12 @@
   border-bottom: 1px solid var(--bn-gray);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.component-item:last-child {
+  margin-bottom: 16px;
 }
 
 .component-item:hover {
@@ -214,30 +230,50 @@
 
 .editor-main {
   flex: 1;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
 .editor-toolbar {
   display: flex;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
   background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.view-toggle-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .view-toggle {
-  background-color: #f3f4f6;
+  background-color: #fff;
   border: 1px solid #d1d5db;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 14px;
   cursor: pointer;
-  font-weight: 500;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .view-toggle:first-of-type {
@@ -286,6 +322,25 @@
   font-size: 0.875rem;
 }
 
+/* Toolbar Cancel Button */
+.editor-toolbar .cancel-btn {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.editor-toolbar .cancel-btn:hover {
+  background-color: #e5e7eb;
+}
+
 .validation-errors {
   margin: 1rem 1.25rem;
   padding: 1rem;
@@ -327,6 +382,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .json-textarea {
@@ -340,6 +396,7 @@
   resize: none;
   background-color: #1e293b;
   color: #f8fafc;
+  overflow-y: auto !important;
 }
 
 .json-error {
@@ -363,16 +420,29 @@
 .form-editor {
   flex: 1;
   padding: 1.25rem;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
 }
 
 .form-section {
   background-color: #fff;
-  padding: 1.25rem;
+  padding: 1.5rem;
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #f0f0f0;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Special styling for the metadata section */
+.form-section.metadata-section {
+  background-color: #fcfcfc;
+  border: 1px solid #f0f0f0;
+  padding: 1.75rem;
 }
 
 .form-section h3 {
@@ -419,6 +489,45 @@
 .form-group textarea {
   min-height: 6rem;
   resize: vertical;
+}
+
+/* Enhanced textarea for descriptions */
+.enhanced-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 15px;
+  border: 1px solid var(--bn-gray);
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fafafa;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.enhanced-textarea:focus {
+  border-color: var(--bn-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.2);
+  background-color: white;
+}
+
+.enhanced-textarea::placeholder {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+.character-count {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  float: right;
 }
 
 .form-group.checkbox {
@@ -472,6 +581,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: visible;
 }
 
 .sub-element-item {
@@ -592,20 +702,20 @@
 
 .preview-panel {
   width: 280px;
-  border-left: 1px solid var(--border-color);
   background-color: var(--sidebar-bg);
   border-left: none;
   min-width: 0;
   max-width: 100%;
-  height: 100%;
   background-color: #fff;
   border-radius: 12px;
   border: 1px solid var(--bn-gray);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden !important;
   padding: 0;
+  height: 100% !important;
+  max-height: 100% !important;
 }
 
 .panel-header {
@@ -626,7 +736,8 @@
 .preview-component {
   flex: 1;
   padding: 1.5rem;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  min-height: 0;
 }
 
 .preview-header {
@@ -675,8 +786,30 @@
 }
 
 .metadata-textarea {
-  min-height: 120px;
+  width: 100%;
+  min-height: 150px !important;
+  max-height: 250px;
+  padding: 12px;
+  border: 1px solid var(--bn-gray);
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
   resize: vertical;
+  overflow-y: auto !important;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.metadata-textarea:focus {
+  border-color: var(--bn-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.1);
+}
+
+.metadata-textarea::placeholder {
+  color: #a0aec0;
+  font-style: italic;
 }
 
 .add-metadata-btn {
@@ -992,6 +1125,7 @@
   border-radius: 0.375rem;
   border: 1px dashed #e5e7eb;
   margin: 0.5rem 0;
+  margin-bottom: 1rem;
   font-size: 0.875rem;
 }
 
@@ -1001,7 +1135,8 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  min-height: 60vh;
+  min-height: 30vh;
+  max-height: 500px;
   color: #64748b;
   text-align: center;
   font-size: 1rem;
@@ -1010,6 +1145,7 @@
   border-radius: 10px;
   border: 1px dashed #D1D5DB;
   margin: 1rem;
+  margin-bottom: 2rem;
 }
 
 .empty-preview-message::before {
@@ -1083,9 +1219,13 @@
   display: grid;
   grid-template-columns: 280px 1fr 280px;
   gap: 25px;
-  height: 100%;
+  height: calc(100vh - 260px) !important;
+  min-height: calc(100vh - 260px) !important;
+  max-height: calc(100vh - 260px) !important;
   margin: 0;
   padding-top: var(--page-padding);
+  padding-bottom: 0;
+  overflow: hidden !important;
 }
 
 /* Make the sidebar fixed width */
@@ -1096,8 +1236,10 @@
   border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
 /* Make the main editor area take available space */
@@ -1107,31 +1249,32 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  height: 100%;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
 /* Style the preview panel as a right sidebar */
 .preview-panel {
   width: 280px;
-  border-left: 1px solid var(--border-color);
   background-color: var(--sidebar-bg);
   border-left: none;
   min-width: 0;
   max-width: 100%;
-  height: 100%;
   background-color: #fff;
   border-radius: 12px;
   border: 1px solid var(--bn-gray);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden !important;
   padding: 0;
+  height: 100% !important;
+  max-height: 100% !important;
 }
 
 .panel-header {
@@ -1152,7 +1295,8 @@
 .preview-component {
   flex: 1;
   padding: 1.5rem;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  min-height: 0;
 }
 
 /* Improve empty preview message styling */
@@ -1162,7 +1306,8 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  min-height: 60vh;
+  min-height: 30vh;
+  max-height: 500px;
   color: #64748b;
   text-align: center;
   font-size: 1rem;
@@ -1171,14 +1316,17 @@
   border-radius: 10px;
   border: 1px dashed #D1D5DB;
   margin: 1rem;
+  margin-bottom: 2rem;
 }
 
 /* Adjust form editor to take full height and scroll */
 .form-editor {
   flex: 1;
   padding: 1.25rem;
-  overflow-y: auto;
-  height: 100%;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
 }
 
 /* Responsive layout for smaller screens */
@@ -1186,6 +1334,8 @@
   .editor-layout.three-column {
     grid-template-columns: 250px 1fr 280px;
     gap: 1rem;
+    height: calc(100vh - 260px) !important;
+    max-height: calc(100vh - 260px) !important;
   }
 }
 
@@ -1194,14 +1344,25 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto;
     gap: 1.5rem;
-    max-height: none;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
   
   .editor-sidebar,
   .editor-main,
   .preview-panel {
-    max-height: 600px;
+    height: auto !important;
+    max-height: 600px !important;
     width: 100%;
+    overflow: hidden !important;
+  }
+
+  .component-items,
+  .form-editor,
+  .preview-component {
+    overflow-y: auto !important;
+    max-height: none !important;
   }
 
   .empty-preview-message {
@@ -1214,12 +1375,15 @@
   .editor-main,
   .preview-panel {
     max-height: 500px;
+    overflow: hidden;
+  }
+
+  .component-items {
+    max-height: 300px; /* Further limit height on mobile but keep scrolling */
   }
 
   .empty-preview-message {
     min-height: 300px;
-    font-size: 0.875rem;
-    padding: 1.5rem;
   }
 }
 
@@ -1475,7 +1639,7 @@ body.dragging .component-item:not(.dragging) {
   border-top: 1px solid var(--border-color);
   background-color: var(--header-bg);
   text-align: center;
-  margin-top: auto;
+  margin-top: 0;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 1;
@@ -1504,4 +1668,97 @@ main.flex-grow {
   display: flex;
   flex-direction: column;
   background-color: var(--app-bg);
+}
+
+/* Adjust proposal content to ensure borders are visible */
+.proposal-content {
+  transition: all 0.2s;
+  padding: 1rem; 
+  border-radius: 0.5rem;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 50vh;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto !important;
+  padding-bottom: 5rem !important; /* Extra padding at bottom to show space for new components */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Add a visual indicator for scrollable content */
+.proposal-content:after {
+  content: '';
+  display: block;
+  height: 3rem;
+  margin-top: 1rem;
+  border-bottom: 2px dashed #e5e7eb;
+  opacity: 0.7;
+  width: 100%;
+}
+
+/* Component drag and drop styles for reordering */
+.proposal-component {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  cursor: grab;
+}
+
+.proposal-component:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.proposal-component.drag-over-reorder {
+  border: 1px dashed var(--bn-blue);
+  background-color: #f0f7ff;
+  transform: translateY(2px);
+}
+
+.proposal-component .drag-handle {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.proposal-component:hover .drag-handle {
+  opacity: 1;
+}
+
+/* For showing a placeholder when dragging */
+.component-dragging .proposal-component.drag-over-reorder::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--bn-blue);
+  border-radius: 4px;
+}
+
+.proposal-component:active {
+  cursor: grabbing;
+}
+
+/* Ensure the scrollable area has a clear visual indicator */
+.selected-components {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto !important;
+  padding-bottom: 2rem;
+  max-height: none;
+}
+
+/* Ensure consistent scrolling behavior across browsers */
+.component-items,
+.form-editor,
+.json-textarea,
+.preview-component,
+.proposal-content {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 } 
