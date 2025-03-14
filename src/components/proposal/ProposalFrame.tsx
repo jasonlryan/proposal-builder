@@ -6,7 +6,7 @@ import ProposalComponent from "./ProposalComponent";
 const ProposalFrame: React.FC = () => {
   const { proposalRef, handleDragOver, handleDragLeave, handleDrop } =
     useDragAndDrop();
-  const { selectedComponents, removeComponent } = useProposalContext();
+  const { selectedComponents } = useProposalContext();
   const [isDragOver, setIsDragOver] = useState(false);
   // const [isDraggingInDocument, setIsDraggingInDocument] = useState(false);
 
@@ -110,7 +110,6 @@ const ProposalFrame: React.FC = () => {
               <ProposalComponent
                 key={component.instanceId}
                 component={component}
-                onRemove={removeComponent}
               />
             ))}
           </div>
