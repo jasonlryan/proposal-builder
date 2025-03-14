@@ -230,6 +230,10 @@ export const ProposalProvider: React.FC<ProposalProviderProps> = ({
 
   // Confirm library change
   const confirmLibraryChange = () => {
+    console.log(
+      "ProposalContext: Confirming library change to",
+      pendingLibraryChange
+    );
     if (pendingLibraryChange) {
       setSelectedComponents([]);
       setSelectedLibrary(pendingLibraryChange);
@@ -240,6 +244,7 @@ export const ProposalProvider: React.FC<ProposalProviderProps> = ({
 
   // Cancel library change
   const cancelLibraryChange = () => {
+    console.log("ProposalContext: Canceling library change");
     setPendingLibraryChange(null);
     setSwitchLibraryModalVisible(false);
   };

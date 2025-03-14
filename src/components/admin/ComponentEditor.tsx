@@ -755,434 +755,451 @@ const ComponentEditor: React.FC = () => {
         <p>Edit and manage component library definitions</p>
       </div>
 
-      <div className="editor-layout three-column">
-        {/* Left column - Component libraries and list */}
-        <div className="editor-sidebar">
-          <div className="panel-header">
-            <h3>Library Selection</h3>
-          </div>
-          <div className="library-selector-container">
-            <div className="form-group library-select-group">
-              <label>Component Library:</label>
-              <select
-                value={selectedLibraryId}
-                onChange={handleLibraryChange}
-                className="library-select"
-              >
-                {libraries.map((lib) => (
-                  <option key={lib.id} value={lib.id}>
-                    {lib.name}
-                  </option>
-                ))}
-              </select>
+      <main className="flex-grow">
+        <div className="editor-layout three-column">
+          {/* Left Sidebar */}
+          <div className="editor-sidebar">
+            <div className="panel-header">
+              <h3>Library Selection</h3>
             </div>
-            <button className="action-btn add-library-btn">
-              <span className="btn-icon">+</span>
-              <span className="btn-text">Add New Library</span>
-            </button>
-          </div>
-
-          <div className="component-list">
-            <div className="list-header">
-              <h3>Components</h3>
-              <button
-                className="action-btn add-component-btn"
-                onClick={handleCreateNewComponent}
-              >
+            <div className="library-selector-container">
+              <div className="form-group library-select-group">
+                <label>Component Library:</label>
+                <select
+                  value={selectedLibraryId}
+                  onChange={handleLibraryChange}
+                  className="library-select"
+                >
+                  {libraries.map((lib) => (
+                    <option key={lib.id} value={lib.id}>
+                      {lib.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button className="action-btn add-library-btn">
                 <span className="btn-icon">+</span>
-                <span className="btn-text">New</span>
+                <span className="btn-text">Add New Library</span>
               </button>
             </div>
 
-            <div className="component-items">
-              {components.length === 0 ? (
-                <div className="empty-list-message">
-                  No components available in this library
-                </div>
-              ) : (
-                components.map((component) => (
-                  <div
-                    key={component.id}
-                    className={`component-item ${
-                      selectedComponent?.id === component.id ? "selected" : ""
-                    }`}
-                    onClick={() => handleComponentSelect(component)}
-                  >
-                    <div className="item-name">{component.name}</div>
-                    <div className="item-price">£{component.basePrice}</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Middle column - Edit form or JSON view */}
-        <div className="editor-main">
-          {selectedComponent ? (
-            <>
-              <div className="editor-toolbar">
-                <div className="view-toggle-group">
-                  <button
-                    className={`view-toggle ${jsonView ? "" : "active"}`}
-                    onClick={() => setJsonView(false)}
-                  >
-                    <span className="icon">📝</span> Form View
-                  </button>
-                  <button
-                    className={`view-toggle ${jsonView ? "active" : ""}`}
-                    onClick={() => setJsonView(true)}
-                  >
-                    <span className="icon">{}</span> JSON View
-                  </button>
-                </div>
-                <button className="save-btn" onClick={handleSave}>
-                  Save Changes
+            <div className="component-list">
+              <div className="list-header">
+                <h3>Components</h3>
+                <button
+                  className="action-btn add-component-btn"
+                  onClick={handleCreateNewComponent}
+                >
+                  <span className="btn-icon">+</span>
+                  <span className="btn-text">New</span>
                 </button>
               </div>
 
-              {validationErrors.length > 0 && (
-                <div className="validation-errors">
-                  <h4>Validation Errors:</h4>
-                  <ul>
-                    {validationErrors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {jsonView ? (
-                <div className="json-editor">
-                  <textarea
-                    value={JSON.stringify(selectedComponent, null, 2)}
-                    onChange={handleJsonChange}
-                    className="json-textarea"
-                    spellCheck="false"
-                  />
-                  {jsonError && <div className="json-error">{jsonError}</div>}
-                </div>
-              ) : (
-                <div className="form-editor">
-                  <div className="form-section">
-                    <h3>Basic Information</h3>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Component ID:</label>
-                        <input
-                          type="text"
-                          name="id"
-                          value={selectedComponent.id}
-                          onChange={handleFormChange}
-                          disabled
-                        />
-                        <div className="field-hint">
-                          Unique identifier (auto-generated)
-                        </div>
-                      </div>
-
-                      <div className="form-group">
-                        <label>Base ID:</label>
-                        <input
-                          type="text"
-                          name="baseId"
-                          value={selectedComponent.baseId || ""}
-                          onChange={handleFormChange}
-                        />
-                        <div className="field-hint">
-                          Used for component type identification
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label>Name:</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={selectedComponent.name}
-                        onChange={handleFormChange}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>Description:</label>
-                      <textarea
-                        name="description"
-                        value={selectedComponent.description}
-                        onChange={handleFormChange}
-                      />
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Base Price (£):</label>
-                        <input
-                          type="number"
-                          name="basePrice"
-                          value={selectedComponent.basePrice}
-                          onChange={handleFormChange}
-                        />
-                      </div>
-
-                      <div className="form-group checkbox">
-                        <label>
-                          <input
-                            type="checkbox"
-                            name="allowMultiple"
-                            checked={selectedComponent.allowMultiple || false}
-                            onChange={handleFormChange}
-                          />
-                          Allow Multiple Instances
-                        </label>
-                        <div className="field-hint">
-                          Can add multiple copies to a proposal
-                        </div>
-                      </div>
-                    </div>
+              <div className="component-items">
+                {components.length === 0 ? (
+                  <div className="empty-list-message">
+                    No components available in this library
                   </div>
-
-                  <div className="form-section">
-                    <div className="section-header">
-                      <h3>Sub Elements</h3>
-                      <button
-                        className="add-element-btn"
-                        onClick={handleAddSubElement}
-                      >
-                        + Add Element
-                      </button>
+                ) : (
+                  components.map((component) => (
+                    <div
+                      key={component.id}
+                      className={`component-item ${
+                        selectedComponent?.id === component.id ? "selected" : ""
+                      }`}
+                      onClick={() => handleComponentSelect(component)}
+                    >
+                      <div className="item-name">{component.name}</div>
+                      <div className="item-price">£{component.basePrice}</div>
                     </div>
-
-                    <div className="sub-elements-list">
-                      {selectedComponent.subElements.length === 0 ? (
-                        <div className="empty-list-message">
-                          No sub-elements defined. Click "Add Element" to create
-                          one.
-                        </div>
-                      ) : (
-                        selectedComponent.subElements.map((element, index) => (
-                          <div key={element.id} className="sub-element-item">
-                            <div className="element-header">
-                              <h4>{element.name}</h4>
-                              <div className="element-actions">
-                                <button
-                                  className="edit-element-btn"
-                                  onClick={() =>
-                                    handleEditSubElement(element, index)
-                                  }
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  className="remove-element-btn"
-                                  onClick={() => handleRemoveSubElement(index)}
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            </div>
-
-                            <div className="element-details">
-                              <div>Type: {element.type}</div>
-                              <div>Price Impact: £{element.priceImpact}</div>
-                              {element.hasVolumeDiscount && (
-                                <div className="tag">Volume Discount</div>
-                              )}
-                              {element.type === "selection" && (
-                                <div>
-                                  Options: {element.options?.length || 0}
-                                </div>
-                              )}
-                              {element.type === "quantity" && (
-                                <div>
-                                  Range: {element.min || 0} -{" "}
-                                  {element.max || "∞"}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-
-                  {showMetadataSection ? (
-                    <div className="form-section">
-                      <div className="section-header">
-                        <h3>Metadata</h3>
-                      </div>
-
-                      <div className="metadata-inputs">
-                        <div className="form-group">
-                          <label>Inputs:</label>
-                          <textarea
-                            value={
-                              selectedComponent.metadata?.inputs?.join("\n") ||
-                              ""
-                            }
-                            onChange={(e) =>
-                              handleMetadataChange("inputs", e.target.value)
-                            }
-                            placeholder="Enter each input on a new line"
-                            className="metadata-textarea"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Tools:</label>
-                          <textarea
-                            value={
-                              selectedComponent.metadata?.tools?.join("\n") ||
-                              ""
-                            }
-                            onChange={(e) =>
-                              handleMetadataChange("tools", e.target.value)
-                            }
-                            placeholder="Enter each tool on a new line"
-                            className="metadata-textarea"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Outputs:</label>
-                          <textarea
-                            value={
-                              selectedComponent.metadata?.outputs?.join("\n") ||
-                              ""
-                            }
-                            onChange={(e) =>
-                              handleMetadataChange("outputs", e.target.value)
-                            }
-                            placeholder="Enter each output on a new line"
-                            className="metadata-textarea"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label>Examples:</label>
-                          <textarea
-                            value={
-                              selectedComponent.metadata?.examples?.join(
-                                "\n"
-                              ) || ""
-                            }
-                            onChange={(e) =>
-                              handleMetadataChange("examples", e.target.value)
-                            }
-                            placeholder="Enter each example on a new line"
-                            className="metadata-textarea"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="form-section">
-                      <button
-                        className="add-metadata-btn"
-                        onClick={handleAddMetadataSection}
-                      >
-                        + Add Metadata
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="no-selection">
-              <p>Select a component to edit or create a new one</p>
-            </div>
-          )}
-        </div>
-
-        {/* Right column - Component preview */}
-        <div className="preview-panel">
-          <div className="panel-header">
-            <h3>Component Preview</h3>
-          </div>
-          {selectedComponent ? (
-            <div className="preview-component">
-              <div className="preview-header">
-                <div className="preview-title">{selectedComponent.name}</div>
-                {selectedComponent.allowMultiple && (
-                  <div className="preview-tag">Multiple allowed</div>
+                  ))
                 )}
               </div>
-              <div className="preview-description">
-                {selectedComponent.description}
-              </div>
-              <div className="preview-price">
-                From £{selectedComponent.basePrice}
-              </div>
+            </div>
+          </div>
 
-              {/* Display metadata if available */}
-              {selectedComponent.metadata && (
-                <div className="preview-metadata">
-                  {selectedComponent.metadata.inputs &&
-                    selectedComponent.metadata.inputs.length > 0 && (
-                      <div className="metadata-section">
-                        <h4>Inputs:</h4>
-                        <ul>
-                          {selectedComponent.metadata.inputs.map(
-                            (input, index) => (
-                              <li key={index}>{input}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                  {selectedComponent.metadata.tools &&
-                    selectedComponent.metadata.tools.length > 0 && (
-                      <div className="metadata-section">
-                        <h4>Tools:</h4>
-                        <ul>
-                          {selectedComponent.metadata.tools.map(
-                            (tool, index) => (
-                              <li key={index}>{tool}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                  {selectedComponent.metadata.outputs &&
-                    selectedComponent.metadata.outputs.length > 0 && (
-                      <div className="metadata-section">
-                        <h4>Outputs:</h4>
-                        <ul>
-                          {selectedComponent.metadata.outputs.map(
-                            (output, index) => (
-                              <li key={index}>{output}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                  {selectedComponent.metadata.examples &&
-                    selectedComponent.metadata.examples.length > 0 && (
-                      <div className="metadata-section">
-                        <h4>Examples:</h4>
-                        <ul>
-                          {selectedComponent.metadata.examples.map(
-                            (example, index) => (
-                              <li key={index}>{example}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
+          {/* Middle column - Edit form or JSON view */}
+          <div className="editor-main">
+            {selectedComponent ? (
+              <>
+                <div className="editor-toolbar">
+                  <div className="view-toggle-group">
+                    <button
+                      className={`view-toggle ${jsonView ? "" : "active"}`}
+                      onClick={() => setJsonView(false)}
+                    >
+                      <span className="icon">📝</span> Form View
+                    </button>
+                    <button
+                      className={`view-toggle ${jsonView ? "active" : ""}`}
+                      onClick={() => setJsonView(true)}
+                    >
+                      <span className="icon">{}</span> JSON View
+                    </button>
+                  </div>
+                  <button className="save-btn" onClick={handleSave}>
+                    Save Changes
+                  </button>
                 </div>
-              )}
+
+                {validationErrors.length > 0 && (
+                  <div className="validation-errors">
+                    <h4>Validation Errors:</h4>
+                    <ul>
+                      {validationErrors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {jsonView ? (
+                  <div className="json-editor">
+                    <textarea
+                      value={JSON.stringify(selectedComponent, null, 2)}
+                      onChange={handleJsonChange}
+                      className="json-textarea"
+                      spellCheck="false"
+                    />
+                    {jsonError && <div className="json-error">{jsonError}</div>}
+                  </div>
+                ) : (
+                  <div className="form-editor">
+                    <div className="form-section">
+                      <h3>Basic Information</h3>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Component ID:</label>
+                          <input
+                            type="text"
+                            name="id"
+                            value={selectedComponent.id}
+                            onChange={handleFormChange}
+                            disabled
+                          />
+                          <div className="field-hint">
+                            Unique identifier (auto-generated)
+                          </div>
+                        </div>
+
+                        <div className="form-group">
+                          <label>Base ID:</label>
+                          <input
+                            type="text"
+                            name="baseId"
+                            value={selectedComponent.baseId || ""}
+                            onChange={handleFormChange}
+                          />
+                          <div className="field-hint">
+                            Used for component type identification
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Name:</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={selectedComponent.name}
+                          onChange={handleFormChange}
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Description:</label>
+                        <textarea
+                          name="description"
+                          value={selectedComponent.description}
+                          onChange={handleFormChange}
+                        />
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Base Price (£):</label>
+                          <input
+                            type="number"
+                            name="basePrice"
+                            value={selectedComponent.basePrice}
+                            onChange={handleFormChange}
+                          />
+                        </div>
+
+                        <div className="form-group checkbox">
+                          <label>
+                            <input
+                              type="checkbox"
+                              name="allowMultiple"
+                              checked={selectedComponent.allowMultiple || false}
+                              onChange={handleFormChange}
+                            />
+                            Allow Multiple Instances
+                          </label>
+                          <div className="field-hint">
+                            Can add multiple copies to a proposal
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-section">
+                      <div className="section-header">
+                        <h3>Sub Elements</h3>
+                        <button
+                          className="add-element-btn"
+                          onClick={handleAddSubElement}
+                        >
+                          + Add Element
+                        </button>
+                      </div>
+
+                      <div className="sub-elements-list">
+                        {selectedComponent.subElements.length === 0 ? (
+                          <div className="empty-list-message">
+                            No sub-elements defined. Click "Add Element" to
+                            create one.
+                          </div>
+                        ) : (
+                          selectedComponent.subElements.map(
+                            (element, index) => (
+                              <div
+                                key={element.id}
+                                className="sub-element-item"
+                              >
+                                <div className="element-header">
+                                  <h4>{element.name}</h4>
+                                  <div className="element-actions">
+                                    <button
+                                      className="edit-element-btn"
+                                      onClick={() =>
+                                        handleEditSubElement(element, index)
+                                      }
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      className="remove-element-btn"
+                                      onClick={() =>
+                                        handleRemoveSubElement(index)
+                                      }
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="element-details">
+                                  <div>Type: {element.type}</div>
+                                  <div>
+                                    Price Impact: £{element.priceImpact}
+                                  </div>
+                                  {element.hasVolumeDiscount && (
+                                    <div className="tag">Volume Discount</div>
+                                  )}
+                                  {element.type === "selection" && (
+                                    <div>
+                                      Options: {element.options?.length || 0}
+                                    </div>
+                                  )}
+                                  {element.type === "quantity" && (
+                                    <div>
+                                      Range: {element.min || 0} -{" "}
+                                      {element.max || "∞"}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {showMetadataSection ? (
+                      <div className="form-section">
+                        <div className="section-header">
+                          <h3>Metadata</h3>
+                        </div>
+
+                        <div className="metadata-inputs">
+                          <div className="form-group">
+                            <label>Inputs:</label>
+                            <textarea
+                              value={
+                                selectedComponent.metadata?.inputs?.join(
+                                  "\n"
+                                ) || ""
+                              }
+                              onChange={(e) =>
+                                handleMetadataChange("inputs", e.target.value)
+                              }
+                              placeholder="Enter each input on a new line"
+                              className="metadata-textarea"
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Tools:</label>
+                            <textarea
+                              value={
+                                selectedComponent.metadata?.tools?.join("\n") ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                handleMetadataChange("tools", e.target.value)
+                              }
+                              placeholder="Enter each tool on a new line"
+                              className="metadata-textarea"
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Outputs:</label>
+                            <textarea
+                              value={
+                                selectedComponent.metadata?.outputs?.join(
+                                  "\n"
+                                ) || ""
+                              }
+                              onChange={(e) =>
+                                handleMetadataChange("outputs", e.target.value)
+                              }
+                              placeholder="Enter each output on a new line"
+                              className="metadata-textarea"
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Examples:</label>
+                            <textarea
+                              value={
+                                selectedComponent.metadata?.examples?.join(
+                                  "\n"
+                                ) || ""
+                              }
+                              onChange={(e) =>
+                                handleMetadataChange("examples", e.target.value)
+                              }
+                              placeholder="Enter each example on a new line"
+                              className="metadata-textarea"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="form-section">
+                        <button
+                          className="add-metadata-btn"
+                          onClick={handleAddMetadataSection}
+                        >
+                          + Add Metadata
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="no-selection">
+                <p>Select a component to edit or create a new one</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right column - Component preview */}
+          <div className="preview-panel">
+            <div className="panel-header">
+              <h3>Component Preview</h3>
             </div>
-          ) : (
-            <div className="empty-preview-message">
-              <span>Select or create a component to see a preview</span>
-            </div>
-          )}
+            {selectedComponent ? (
+              <div className="preview-component">
+                <div className="preview-header">
+                  <div className="preview-title">{selectedComponent.name}</div>
+                  {selectedComponent.allowMultiple && (
+                    <div className="preview-tag">Multiple allowed</div>
+                  )}
+                </div>
+                <div className="preview-description">
+                  {selectedComponent.description}
+                </div>
+                <div className="preview-price">
+                  From £{selectedComponent.basePrice}
+                </div>
+
+                {/* Display metadata if available */}
+                {selectedComponent.metadata && (
+                  <div className="preview-metadata">
+                    {selectedComponent.metadata.inputs &&
+                      selectedComponent.metadata.inputs.length > 0 && (
+                        <div className="metadata-section">
+                          <h4>Inputs:</h4>
+                          <ul>
+                            {selectedComponent.metadata.inputs.map(
+                              (input, index) => (
+                                <li key={index}>{input}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                    {selectedComponent.metadata.tools &&
+                      selectedComponent.metadata.tools.length > 0 && (
+                        <div className="metadata-section">
+                          <h4>Tools:</h4>
+                          <ul>
+                            {selectedComponent.metadata.tools.map(
+                              (tool, index) => (
+                                <li key={index}>{tool}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                    {selectedComponent.metadata.outputs &&
+                      selectedComponent.metadata.outputs.length > 0 && (
+                        <div className="metadata-section">
+                          <h4>Outputs:</h4>
+                          <ul>
+                            {selectedComponent.metadata.outputs.map(
+                              (output, index) => (
+                                <li key={index}>{output}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                    {selectedComponent.metadata.examples &&
+                      selectedComponent.metadata.examples.length > 0 && (
+                        <div className="metadata-section">
+                          <h4>Examples:</h4>
+                          <ul>
+                            {selectedComponent.metadata.examples.map(
+                              (example, index) => (
+                                <li key={index}>{example}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="empty-preview-message">
+                <span>Select or create a component to see a preview</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
+
+      <footer className="editor-footer">
+        <p>Component Editor © {new Date().getFullYear()}</p>
+      </footer>
 
       <div className="editor-help-note">
         <strong>Tip:</strong> Use the Form View for a guided editing experience

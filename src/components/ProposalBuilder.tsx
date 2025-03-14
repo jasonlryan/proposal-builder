@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLibraryContext } from "../context/LibraryContext";
 import { useProposalContext } from "../context/ProposalContext";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,6 +20,7 @@ const ProposalBuilder: React.FC = () => {
     setSelectedLibrary,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     availableComponents,
+    libraries,
   } = useLibraryContext();
   const {
     selectedComponents,
@@ -43,10 +44,14 @@ const ProposalBuilder: React.FC = () => {
   // Handle library change with confirmation if needed
   const handleLibraryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLibrary = e.target.value;
+    console.log("Library change requested to:", newLibrary);
+
     if (selectedComponents.length > 0) {
+      console.log("Selected components exist, showing confirmation modal");
       setPendingLibraryChange(newLibrary);
       setSwitchLibraryModalVisible(true);
     } else {
+      console.log("No selected components, changing library directly");
       setSelectedLibrary(newLibrary);
     }
   };
@@ -82,7 +87,7 @@ const ProposalBuilder: React.FC = () => {
 
   return (
     <div className="component-editor">
-      <div className="editor-header" style={{ marginBottom: "20px" }}>
+      <div className="editor-header">
         <h2>Proposal Builder</h2>
         <p>
           Create and customize proposals by adding components from the library
@@ -90,43 +95,41 @@ const ProposalBuilder: React.FC = () => {
       </div>
 
       <main className="flex-grow">
-        <div className="container mx-auto px-4">
-          <div className="editor-layout three-column">
-            <div className="editor-sidebar">
-              <div className="panel-header">
-                <h3>Library Selection</h3>
-              </div>
-              <div className="library-selector-container">
-                <div className="form-group library-select-group">
-                  <label>Component Library:</label>
-                  <select
-                    value={selectedLibrary}
-                    onChange={handleLibraryChange}
-                    className="library-select"
-                  >
-                    <option value="ai-b-c">AI-B-C Programme</option>
-                    {/* Other libraries would be dynamically loaded here */}
-                  </select>
-                </div>
-                {/* "Add New Library" button removed as it's available in Editor */}
-              </div>
-              <ComponentLibrary />
+        <div className="editor-layout three-column">
+          <div className="editor-sidebar">
+            <div className="panel-header">
+              <h3>Library Selection</h3>
             </div>
-            <ProposalFrame />
-            <ProposalSummary
-              onPreview={toggleProposalModal}
-              onPublish={togglePublishModal}
-            />
+            <div className="library-selector-container">
+              <div className="form-group library-select-group">
+                <label>Component Library:</label>
+                <select
+                  value={selectedLibrary}
+                  onChange={handleLibraryChange}
+                  className="library-select"
+                >
+                  {/* Dynamically load libraries instead of hardcoding */}
+                  {Object.entries(libraries).map(([id, lib]) => (
+                    <option key={id} value={id}>
+                      {lib.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* "Add New Library" button removed as it's available in Editor */}
+            </div>
+            <ComponentLibrary />
           </div>
+          <ProposalFrame />
+          <ProposalSummary
+            onPreview={toggleProposalModal}
+            onPublish={togglePublishModal}
+          />
         </div>
       </main>
 
-      <footer className="bg-gray-800 text-white py-4 mt-auto">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm">
-            Proposal Builder © {new Date().getFullYear()}
-          </p>
-        </div>
+      <footer className="editor-footer">
+        <p>Proposal Builder © {new Date().getFullYear()}</p>
       </footer>
 
       {modalVisible && (

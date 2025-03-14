@@ -84,10 +84,21 @@ export const LibraryProvider: React.FC<LibraryProviderProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load component libraries from JSON
+  // Handle library change
+  const handleLibraryChange = (newLibrary: string) => {
+    console.log(
+      `LibraryContext: handleLibraryChange called with ${newLibrary}`
+    );
+    setSelectedLibrary(newLibrary);
+  };
+
+  // useEffect for loading libraries
   useEffect(() => {
     const fetchLibraries = async () => {
       try {
+        console.log(
+          `LibraryContext: Fetching libraries for ${selectedLibrary}`
+        );
         setIsLoading(true);
         const response = await fetch("/assets/component-libraries.json");
         if (!response.ok) {
@@ -98,13 +109,22 @@ export const LibraryProvider: React.FC<LibraryProviderProps> = ({
 
         // Set available components based on selected library
         if (data.componentLibraries[selectedLibrary]) {
+          console.log(
+            `LibraryContext: Setting components for ${selectedLibrary}, found ${data.componentLibraries[selectedLibrary].components.length} components`
+          );
           setAvailableComponents(
             data.componentLibraries[selectedLibrary].components
           );
+        } else {
+          console.error(
+            `LibraryContext: Could not find library ${selectedLibrary} in loaded data`
+          );
+          setAvailableComponents([]);
         }
 
         setIsLoading(false);
       } catch (err) {
+        console.error(`LibraryContext: Error fetching libraries:`, err);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -114,11 +134,6 @@ export const LibraryProvider: React.FC<LibraryProviderProps> = ({
 
     fetchLibraries();
   }, [selectedLibrary]);
-
-  // Handle library change
-  const handleLibraryChange = (newLibrary: string) => {
-    setSelectedLibrary(newLibrary);
-  };
 
   const value = {
     selectedLibrary,
