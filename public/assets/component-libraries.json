@@ -1,0 +1,494 @@
+{
+  "componentLibraries": {
+    "ai-b-c": {
+      "name": "AI-B-C Programme",
+      "description": "AI capability and innovation programmes for leaders and teams",
+      "components": [
+        {
+          "id": "powerHour",
+          "name": "Power Hour",
+          "description": "One-hour focused coaching sessions.",
+          "basePrice": 0,
+          "allowMultiple": true,
+          "subElements": [
+            {
+              "id": "hours",
+              "name": "Number of Hours",
+              "type": "quantity",
+              "priceImpact": 300,
+              "default": 1,
+              "min": 1,
+              "hasVolumeDiscount": true
+            }
+          ]
+        },
+        {
+          "id": "discovery",
+          "name": "Discovery & Design",
+          "description": "Initial research and planning phase.",
+          "basePrice": 5000,
+          "subElements": [
+            {
+              "id": "interviews",
+              "name": "Stakeholder Interviews",
+              "type": "quantity",
+              "priceImpact": 400,
+              "default": 0,
+              "min": 0,
+              "max": 20
+            },
+            {
+              "id": "userResearch",
+              "name": "User Research Session",
+              "type": "quantity",
+              "priceImpact": 600,
+              "default": 0,
+              "min": 0
+            },
+            {
+              "id": "competitiveAnalysis",
+              "name": "Competitive Analysis",
+              "type": "boolean",
+              "priceImpact": 1200,
+              "default": false
+            }
+          ]
+        },
+        {
+          "id": "workshop",
+          "name": "Workshop",
+          "description": "Interactive team sessions.",
+          "basePrice": 3000,
+          "allowMultiple": true,
+          "subElements": [
+            {
+              "id": "designThinking",
+              "name": "Design Thinking",
+              "type": "boolean",
+              "priceImpact": 500,
+              "default": false
+            },
+            {
+              "id": "handsonPractice",
+              "name": "Hands-On Practice",
+              "type": "boolean",
+              "priceImpact": 750,
+              "default": false
+            },
+            {
+              "id": "strategySession",
+              "name": "Strategy Session",
+              "type": "boolean",
+              "priceImpact": 850,
+              "default": false
+            },
+            {
+              "id": "additionalDays",
+              "name": "Additional Workshop Days",
+              "type": "quantity",
+              "priceImpact": 2000,
+              "default": 0,
+              "min": 0,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "id": "implementation",
+          "name": "Implementation & Experimentation",
+          "description": "Putting ideas into practice.",
+          "basePrice": 6000,
+          "subElements": [
+            {
+              "id": "weeklyCheckins",
+              "name": "Weekly Check-Ins",
+              "type": "quantity",
+              "priceImpact": 500,
+              "default": 0,
+              "min": 0
+            },
+            {
+              "id": "demoDay",
+              "name": "Demo Day",
+              "type": "boolean",
+              "priceImpact": 1000,
+              "default": false
+            },
+            {
+              "id": "usabilityTesting",
+              "name": "Usability Testing",
+              "type": "quantity",
+              "priceImpact": 800,
+              "default": 0,
+              "min": 0
+            }
+          ]
+        },
+        {
+          "id": "coaching",
+          "name": "Coaching",
+          "description": "Expert guidance for teams.",
+          "basePrice": 0,
+          "subElements": [
+            {
+              "id": "coachingDays",
+              "name": "Coaching Days",
+              "type": "quantity",
+              "priceImpact": 1200,
+              "default": 0,
+              "min": 0
+            }
+          ]
+        },
+        {
+          "id": "tools",
+          "name": "Tools & Integration",
+          "description": "Technical solutions and automation.",
+          "basePrice": 2000,
+          "subElements": [
+            {
+              "id": "integrationScripts",
+              "name": "Integration Scripts",
+              "type": "quantity",
+              "priceImpact": 500,
+              "default": 0,
+              "min": 0
+            },
+            {
+              "id": "apiDevelopment",
+              "name": "API Development",
+              "type": "boolean",
+              "priceImpact": 1500,
+              "default": false
+            },
+            {
+              "id": "dataMigration",
+              "name": "Data Migration",
+              "type": "boolean",
+              "priceImpact": 1200,
+              "default": false
+            }
+          ]
+        },
+        {
+          "id": "contingency",
+          "name": "Contingency",
+          "description": "Risk management buffer to account for unexpected challenges and scope refinements.",
+          "basePrice": 0,
+          "subElements": [
+            {
+              "id": "contingencyRate",
+              "name": "Contingency Rate",
+              "type": "selection",
+              "options": [
+                {"value": 0, "label": "None"},
+                {"value": 0.05, "label": "5%"},
+                {"value": 0.10, "label": "10%"},
+                {"value": 0.15, "label": "15%"},
+                {"value": 0.20, "label": "20%"}
+              ],
+              "default": 0
+            }
+          ]
+        },
+        {
+          "id": "genericInfo",
+          "name": "Generic Informational Blocks",
+          "description": "Non-billable information resources to enhance proposal context and clarity.",
+          "basePrice": 0,
+          "allowMultiple": true,
+          "subElements": [
+            {
+              "id": "infoBlocks",
+              "name": "Information Blocks",
+              "type": "quantity",
+              "priceImpact": 0,
+              "default": 0,
+              "min": 0
+            }
+          ]
+        }
+      ]
+    },
+    "research-sprint": {
+      "name": "Research Sprint",
+      "description": "Focused research activities to gather insights",
+      "components": [
+        {
+          "id": "dataReview",
+          "name": "Reviewing Existing Data",
+          "description": "Analysis of existing research materials.",
+          "basePrice": 3500,
+          "subElements": [
+            {
+              "id": "gatherDocumentation",
+              "name": "Gather All Existing Documentation",
+              "type": "boolean",
+              "priceImpact": 750,
+              "default": false
+            },
+            {
+              "id": "extractKeyPoints",
+              "name": "Extract Key Points",
+              "type": "boolean",
+              "priceImpact": 1200,
+              "default": false
+            },
+            {
+              "id": "organizeFindings",
+              "name": "Organize Findings",
+              "type": "boolean",
+              "priceImpact": 900,
+              "default": false
+            },
+            {
+              "id": "dataSize",
+              "name": "Volume of Data to Review",
+              "type": "selection",
+              "options": [
+                {"value": 1, "label": "Small (1-5 documents)"},
+                {"value": 1.5, "label": "Medium (6-15 documents)"},
+                {"value": 2, "label": "Large (16+ documents)"}
+              ],
+              "default": 1,
+              "priceImpact": 800
+            }
+          ],
+          "metadata": {
+            "inputs": [
+              "Market research reports",
+              "Customer journey maps",
+              "Analytics data",
+              "Previous user research",
+              "Stakeholder documentation"
+            ],
+            "tools": [
+              "Document Repositories (Google Drive, Notion)",
+              "Summarization AI (ChatGPT, Claude)",
+              "Collaboration (Airtable, Google Sheets/Docs)"
+            ],
+            "outputs": [
+              "Comprehensive insights summary",
+              "Data visualization dashboard",
+              "Research gap analysis",
+              "Prioritized opportunity areas"
+            ],
+            "examples": [
+              "Brand Refresh: Reevaluating old audience research",
+              "New Product Launch: Incorporate lessons from past pilots",
+              "Competitive Update: Check if market shifts invalidate old data",
+              "BMW F900 R/XR project: Summarize survey/persona findings for targeted campaigns"
+            ]
+          }
+        },
+        {
+          "id": "fieldResearch",
+          "name": "Field Research",
+          "description": "Direct user observation and interviews.",
+          "basePrice": 5000,
+          "subElements": [
+            {
+              "id": "interviews",
+              "name": "User Interviews",
+              "type": "quantity",
+              "priceImpact": 750,
+              "default": 0,
+              "min": 0,
+              "max": 15
+            },
+            {
+              "id": "contextualInquiry",
+              "name": "Contextual Inquiry",
+              "type": "boolean",
+              "priceImpact": 2000,
+              "default": false
+            },
+            {
+              "id": "ethnography",
+              "name": "Ethnographic Observation",
+              "type": "boolean",
+              "priceImpact": 2500,
+              "default": false
+            }
+          ],
+          "metadata": {
+            "inputs": [
+              "Detailed research objectives",
+              "Participant screening criteria",
+              "Discussion guide and protocols",
+              "Consent forms and NDAs",
+              "Incentive structure"
+            ],
+            "tools": [
+              "Interview recording software",
+              "Note-taking tools",
+              "Transcription services",
+              "Observation frameworks"
+            ],
+            "outputs": [
+              "Annotated interview recordings",
+              "Verbatim transcriptions",
+              "Behavioral analysis report",
+              "Key patterns & insights report",
+              "Video highlight reel"
+            ],
+            "examples": [
+              "Retail Store Experience: Observe shoppers in their natural environment",
+              "Healthcare Interface: Interview patients about their journey",
+              "Financial App: Document how users manage their finances at home"
+            ]
+          }
+        },
+        {
+          "id": "survey",
+          "name": "Survey Research",
+          "description": "Quantitative data collection via surveys.",
+          "basePrice": 4000,
+          "subElements": [
+            {
+              "id": "surveyDesign",
+              "name": "Survey Design",
+              "type": "boolean",
+              "priceImpact": 1000,
+              "default": false
+            },
+            {
+              "id": "participantRecruitment",
+              "name": "Participant Recruitment",
+              "type": "selection",
+              "options": [
+                {"value": 0, "label": "Use your own participants"},
+                {"value": 1, "label": "100-250 participants"},
+                {"value": 2, "label": "251-500 participants"},
+                {"value": 3, "label": "501-1000 participants"}
+              ],
+              "default": 0,
+              "priceImpact": 1500
+            },
+            {
+              "id": "analysisReport",
+              "name": "Advanced Analysis & Report",
+              "type": "boolean",
+              "priceImpact": 2000,
+              "default": false
+            }
+          ],
+          "metadata": {
+            "inputs": [
+              "Research objectives document",
+              "Segmentation criteria",
+              "Competitive benchmarks",
+              "Previous survey results",
+              "Stakeholder requirements"
+            ],
+            "tools": [
+              "Survey platforms (SurveyMonkey, Typeform)",
+              "Statistical analysis software",
+              "Data visualization tools",
+              "Panel providers for recruitment"
+            ],
+            "outputs": [
+              "Complete dataset (SPSS/Excel format)",
+              "Cross-tabulation analysis",
+              "Statistical significance testing",
+              "Segment comparison report",
+              "Executive summary presentation"
+            ],
+            "examples": [
+              "Product Satisfaction: Measure NPS across customer segments",
+              "Feature Prioritization: Quantify user preferences for roadmap planning",
+              "Market Research: Assess brand awareness and perception"
+            ]
+          }
+        },
+        {
+          "id": "synthesis",
+          "name": "Research Synthesis",
+          "description": "Converting data into actionable insights.",
+          "basePrice": 3500,
+          "subElements": [
+            {
+              "id": "affinityMapping",
+              "name": "Affinity Mapping Workshop",
+              "type": "boolean",
+              "priceImpact": 1200,
+              "default": false
+            },
+            {
+              "id": "personaDevelopment",
+              "name": "Persona Development",
+              "type": "quantity",
+              "priceImpact": 1000,
+              "default": 0,
+              "min": 0,
+              "max": 5
+            },
+            {
+              "id": "journeyMapping",
+              "name": "Customer Journey Mapping",
+              "type": "boolean",
+              "priceImpact": 1800,
+              "default": false
+            },
+            {
+              "id": "insightReport",
+              "name": "Comprehensive Insight Report",
+              "type": "boolean",
+              "priceImpact": 2500,
+              "default": false
+            }
+          ],
+          "metadata": {
+            "inputs": [
+              "Qualitative and quantitative findings",
+              "Stakeholder interviews",
+              "Customer feedback database",
+              "Industry trend reports",
+              "Competitive analysis"
+            ],
+            "tools": [
+              "Miro/Mural for affinity mapping",
+              "Design thinking frameworks",
+              "Jobs-to-be-done analysis",
+              "Figma for visualization",
+              "Custom synthesis templates"
+            ],
+            "outputs": [
+              "Strategic insights report",
+              "Evidence-based personas",
+              "Experience journey maps",
+              "Opportunity prioritization matrix",
+              "Strategic recommendations roadmap"
+            ],
+            "examples": [
+              "Product Redesign: Identify pain points and opportunities from user research",
+              "Service Blueprint: Map the entire customer experience across touchpoints",
+              "Strategic Planning: Turn research into actionable product roadmap"
+            ]
+          }
+        },
+        {
+          "id": "contingency",
+          "name": "Contingency",
+          "description": "Risk management buffer to account for unexpected challenges and scope refinements.",
+          "basePrice": 0,
+          "subElements": [
+            {
+              "id": "contingencyRate",
+              "name": "Contingency Rate",
+              "type": "selection",
+              "options": [
+                {"value": 0, "label": "None"},
+                {"value": 0.05, "label": "5%"},
+                {"value": 0.10, "label": "10%"},
+                {"value": 0.15, "label": "15%"},
+                {"value": 0.20, "label": "20%"}
+              ],
+              "default": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

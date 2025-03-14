@@ -1,0 +1,12 @@
+{
+    "project": "proposal-builder",
+    "suggestions": {
+        "enabled": true,
+        "mode": "inline"
+    },
+    "formatOnSave": true,
+    "linting": {
+        "enabled": true,
+        "eslint": true
+    }
+}

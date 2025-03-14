@@ -1,0 +1,200 @@
+{
+    "libraries": [
+        {
+            "id": "ai-b-c",
+            "name": "AI-B-C Programme",
+            "description": "A structured programme for implementing AI solutions",
+            "components": [
+                {
+                    "id": "workshop-1",
+                    "baseId": "workshop",
+                    "name": "Design Workshop",
+                    "description": "A collaborative workshop to define project requirements and design approach",
+                    "basePrice": 2500,
+                    "allowMultiple": true,
+                    "subElements": [
+                        {
+                            "id": "days",
+                            "name": "Number of Days",
+                            "type": "quantity",
+                            "priceImpact": 1000,
+                            "default": 1,
+                            "min": 1,
+                            "max": 5
+                        },
+                        {
+                            "id": "remote",
+                            "name": "Remote Delivery",
+                            "type": "boolean",
+                            "priceImpact": -500,
+                            "default": false
+                        }
+                    ]
+                },
+                {
+                    "id": "powerHour-1",
+                    "baseId": "powerHour",
+                    "name": "Power Hour",
+                    "description": "Expert consultation sessions to address specific challenges",
+                    "basePrice": 300,
+                    "allowMultiple": true,
+                    "subElements": [
+                        {
+                            "id": "hours",
+                            "name": "Number of Hours",
+                            "type": "quantity",
+                            "priceImpact": 300,
+                            "default": 1,
+                            "min": 1,
+                            "hasVolumeDiscount": true
+                        }
+                    ]
+                },
+                {
+                    "id": "ai-assessment-1",
+                    "baseId": "assessment",
+                    "name": "AI Readiness Assessment",
+                    "description": "Comprehensive evaluation of organization's AI readiness",
+                    "basePrice": 4500,
+                    "allowMultiple": false,
+                    "subElements": [
+                        {
+                            "id": "depth",
+                            "name": "Assessment Depth",
+                            "type": "selection",
+                            "options": [
+                                {
+                                    "value": "basic",
+                                    "label": "Basic"
+                                },
+                                {
+                                    "value": "standard",
+                                    "label": "Standard"
+                                },
+                                {
+                                    "value": "comprehensive",
+                                    "label": "Comprehensive"
+                                }
+                            ],
+                            "default": "standard",
+                            "priceImpact": 0
+                        },
+                        {
+                            "id": "departments",
+                            "name": "Number of Departments",
+                            "type": "quantity",
+                            "priceImpact": 500,
+                            "default": 1,
+                            "min": 1,
+                            "max": 10
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "research-sprint",
+            "name": "Research Sprint",
+            "description": "Fast-paced research projects to address specific business questions",
+            "components": [
+                {
+                    "id": "sprint-kickoff",
+                    "baseId": "kickoff",
+                    "name": "Sprint Kickoff Session",
+                    "description": "Initial session to define research questions and approach",
+                    "basePrice": 1200,
+                    "allowMultiple": false,
+                    "subElements": [
+                        {
+                            "id": "stakeholders",
+                            "name": "Number of Stakeholders",
+                            "type": "quantity",
+                            "priceImpact": 150,
+                            "default": 3,
+                            "min": 1,
+                            "max": 8
+                        }
+                    ]
+                },
+                {
+                    "id": "data-collection",
+                    "baseId": "datacollect",
+                    "name": "Data Collection",
+                    "description": "Gathering and preparing data for analysis",
+                    "basePrice": 2000,
+                    "allowMultiple": false,
+                    "subElements": [
+                        {
+                            "id": "source-type",
+                            "name": "Data Source Type",
+                            "type": "selection",
+                            "options": [
+                                {
+                                    "value": "existing",
+                                    "label": "Existing Data"
+                                },
+                                {
+                                    "value": "new",
+                                    "label": "New Collection"
+                                },
+                                {
+                                    "value": "mixed",
+                                    "label": "Mixed Approach"
+                                }
+                            ],
+                            "default": "existing",
+                            "priceImpact": 0
+                        },
+                        {
+                            "id": "volume",
+                            "name": "Data Volume",
+                            "type": "selection",
+                            "options": [
+                                {
+                                    "value": "small",
+                                    "label": "Small (<100GB)"
+                                },
+                                {
+                                    "value": "medium",
+                                    "label": "Medium (100-500GB)"
+                                },
+                                {
+                                    "value": "large",
+                                    "label": "Large (>500GB)"
+                                }
+                            ],
+                            "default": "small",
+                            "priceImpact": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "analysis-report",
+                    "baseId": "report",
+                    "name": "Analysis & Report",
+                    "description": "Detailed analysis and comprehensive report of findings",
+                    "basePrice": 3500,
+                    "allowMultiple": false,
+                    "subElements": [
+                        {
+                            "id": "revisions",
+                            "name": "Number of Revision Rounds",
+                            "type": "quantity",
+                            "priceImpact": 500,
+                            "default": 1,
+                            "min": 0,
+                            "max": 3
+                        },
+                        {
+                            "id": "presentation",
+                            "name": "Include Presentation",
+                            "type": "boolean",
+                            "priceImpact": 750,
+                            "default": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
