@@ -18,7 +18,6 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
   const [error, setError] = useState<string>("");
   const [restoreInProgress, setRestoreInProgress] = useState<boolean>(false);
   const [selectedBackup, setSelectedBackup] = useState<string>("");
-  const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
 
   // Fetch backups on component mount
   useEffect(() => {
@@ -45,22 +44,27 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
     }
   };
 
-  const handleRestoreClick = (backupName: string) => {
-    setSelectedBackup(backupName);
-    setShowConfirmDialog(true);
-  };
+  const handleRestore = async (backupName: string) => {
+    if (restoreInProgress) return;
 
-  const handleConfirmRestore = async () => {
-    if (!selectedBackup) return;
+    // Confirm before restoring
+    if (
+      !window.confirm(
+        `Are you sure you want to restore from backup: ${backupName}? A backup of the current state will be created.`
+      )
+    ) {
+      return;
+    }
 
     try {
       setRestoreInProgress(true);
       setError("");
+      setSelectedBackup(backupName);
 
-      const result = await restoreFromBackup(selectedBackup);
+      const result = await restoreFromBackup(backupName);
 
       if (result.success) {
-        alert(`Successfully restored from backup: ${selectedBackup}`);
+        alert(`Successfully restored from backup: ${backupName}`);
         // Pass the restored data to the parent component
         if (onRestoreComplete && result.data) {
           onRestoreComplete(result.data);
@@ -75,7 +79,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
       setError("Failed to restore from backup");
     } finally {
       setRestoreInProgress(false);
-      setShowConfirmDialog(false);
+      setSelectedBackup("");
     }
   };
 
@@ -94,10 +98,23 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
     return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   };
 
+  // Extract date info from backup name for better display
+  const getFormattedBackupName = (name: string) => {
+    const match = name.match(
+      /component-libraries-(\d{4}-\d{2}-\d{2})-(\d{2}-\d{2}-\d{2})\.bak/
+    );
+    if (match && match[1] && match[2]) {
+      const date = match[1].replace(/-/g, "/");
+      const time = match[2].replace(/-/g, ":");
+      return `${date} at ${time}`;
+    }
+    return name;
+  };
+
   return (
     <div className="backup-manager">
       <div className="backup-header">
-        <h3>Backup Manager</h3>
+        <h3>Available Backups</h3>
         <button
           className="refresh-btn"
           onClick={fetchBackups}
@@ -116,7 +133,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
           <table className="backups-table">
             <thead>
               <tr>
-                <th>Backup Name</th>
+                <th>Backup Date</th>
                 <th>Created</th>
                 <th>Size</th>
                 <th>Actions</th>
@@ -124,17 +141,24 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
             </thead>
             <tbody>
               {backups.map((backup) => (
-                <tr key={backup.name}>
-                  <td>{backup.name}</td>
+                <tr
+                  key={backup.name}
+                  className={
+                    selectedBackup === backup.name ? "selected-backup" : ""
+                  }
+                >
+                  <td>{getFormattedBackupName(backup.name)}</td>
                   <td>{formatDate(backup.created)}</td>
                   <td>{formatFileSize(backup.size)}</td>
                   <td>
                     <button
                       className="restore-btn"
-                      onClick={() => handleRestoreClick(backup.name)}
+                      onClick={() => handleRestore(backup.name)}
                       disabled={restoreInProgress}
                     >
-                      Restore
+                      {restoreInProgress && selectedBackup === backup.name
+                        ? "Restoring..."
+                        : "Restore"}
                     </button>
                   </td>
                 </tr>
@@ -143,50 +167,6 @@ const BackupManager: React.FC<BackupManagerProps> = ({ onRestoreComplete }) => {
           </table>
         )}
       </div>
-
-      {showConfirmDialog && (
-        <div className="modal-overlay">
-          <div className="modal-content backup-confirm-modal">
-            <div className="modal-header">
-              <h3>Confirm Restore</h3>
-              <button
-                className="close-btn"
-                onClick={() => setShowConfirmDialog(false)}
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <p>
-                Are you sure you want to restore from backup: <br />
-                <strong>{selectedBackup}</strong>?
-              </p>
-              <p>
-                This will replace the current component library data with the
-                backup version. A backup of the current state will be created
-                before restoring.
-              </p>
-            </div>
-            <div className="modal-footer">
-              <button
-                className="cancel-btn"
-                onClick={() => setShowConfirmDialog(false)}
-                disabled={restoreInProgress}
-              >
-                Cancel
-              </button>
-              <button
-                className="confirm-restore-btn"
-                onClick={handleConfirmRestore}
-                disabled={restoreInProgress}
-              >
-                {restoreInProgress ? "Restoring..." : "Yes, Restore"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

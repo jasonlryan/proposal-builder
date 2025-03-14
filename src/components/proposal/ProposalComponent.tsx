@@ -17,24 +17,80 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
   const componentPrice = calculateComponentPrice(component);
 
   return (
-    <div className="proposal-component bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-      <div className="flex justify-between items-start mb-3">
+    <div
+      className="proposal-component"
+      style={{
+        backgroundColor: "white",
+        border: "1px solid #e5e7eb",
+        borderRadius: "0.5rem",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        padding: "1rem",
+        transition: "all 0.2s ease",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "0.75rem",
+        }}
+      >
         <div>
-          <h3 className="font-semibold text-gray-800">{component.name}</h3>
-          <p className="text-sm text-gray-600">{component.description}</p>
+          <h3
+            style={{
+              fontWeight: 600,
+              color: "#1f2937",
+              fontSize: "1rem",
+              marginBottom: "0.25rem",
+            }}
+          >
+            {component.name}
+          </h3>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "#6b7280",
+            }}
+          >
+            {component.description}
+          </p>
         </div>
-        <div className="flex items-center">
-          <span className="text-blue-600 font-medium mr-4">
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span
+            style={{
+              color: "var(--bn-blue)",
+              fontWeight: 500,
+              marginRight: "1rem",
+            }}
+          >
             {formatCurrency(componentPrice)}
           </span>
           <button
             onClick={() => removeComponent(component.instanceId)}
-            className="text-red-500 hover:text-red-700 transition-colors"
+            style={{
+              color: "#ef4444",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0.25rem",
+              cursor: "pointer",
+              borderRadius: "0.25rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background-color 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#fee2e2";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
             aria-label="Remove component"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              style={{ height: "1.25rem", width: "1.25rem" }}
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -48,7 +104,7 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
         </div>
       </div>
 
-      <div className="sub-elements space-y-3">
+      <div style={{ marginTop: "0.75rem" }}>
         {component.subElements.map((subElement) => (
           <SubElementConfig
             key={subElement.id}

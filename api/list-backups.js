@@ -1,11 +1,11 @@
-import fs from "fs";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
 
 /**
  * API route handler to list available component backups
  * This runs server-side as a serverless function
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   // Only allow GET requests
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method Not Allowed" });
@@ -17,8 +17,11 @@ export default async function handler(req, res) {
     const assetsDir = path.join(publicDir, "assets");
     const backupsDir = path.join(assetsDir, "backups");
 
+    console.log("Looking for backups in:", backupsDir);
+
     // If backups directory doesn't exist, return empty array
     if (!fs.existsSync(backupsDir)) {
+      console.log("Backups directory does not exist");
       return res.status(200).json({
         message: "No backups found",
         backups: [],
@@ -55,6 +58,8 @@ export default async function handler(req, res) {
       // Sort by creation date, newest first
       .sort((a, b) => new Date(b.created) - new Date(a.created));
 
+    console.log(`Found ${files.length} backup files`);
+
     return res.status(200).json({
       message: `Found ${files.length} backups`,
       backups: files,
@@ -67,3 +72,8 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Export for both CommonJS and Next.js API routes
+module.exports = {
+  default: handler,
+};

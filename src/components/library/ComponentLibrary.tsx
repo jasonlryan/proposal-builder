@@ -15,9 +15,11 @@ const ComponentLibrary: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="component-library">
-        <h2 className="library-title">Loading Components...</h2>
-        <div className="animate-pulse space-y-4">
+      <div className="component-list">
+        <div className="list-header">
+          <h3>Components</h3>
+        </div>
+        <div className="animate-pulse space-y-4 p-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-24 bg-gray-200 rounded"></div>
           ))}
@@ -26,23 +28,24 @@ const ComponentLibrary: React.FC = () => {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const description = getCurrentLibraryDescription();
 
   return (
-    <div className="component-library">
-      <h2 className="library-title">
-        {formatLibraryName(selectedLibrary)} Components
-      </h2>
-      {description && <p className="component-description">{description}</p>}
-
-      <div className="library-components custom-scrollbar">
-        {availableComponents.map((component) => (
-          <ComponentCard key={component.id} component={component} />
-        ))}
+    <div className="component-list">
+      <div className="list-header">
+        <h3>Components</h3>
       </div>
-
-      <div className="library-footer">
-        <p>Drag components to the center panel to add them to your proposal.</p>
+      <div className="component-items custom-scrollbar">
+        {availableComponents.length > 0 ? (
+          availableComponents.map((component) => (
+            <ComponentCard key={component.id} component={component} />
+          ))
+        ) : (
+          <div className="empty-list-message">
+            No components available in this library
+          </div>
+        )}
       </div>
     </div>
   );

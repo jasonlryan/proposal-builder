@@ -1,6 +1,20 @@
 // File operations utilities for component editor
 import axios from "axios";
 
+// Determine the base URL based on the environment
+const getApiBaseUrl = () => {
+  // Check if we're in development or production
+  const isProduction = process.env.NODE_ENV === "production";
+  const devApiPort = 5050; // Changed from 5000 to 5050
+
+  if (isProduction) {
+    return ""; // In production, API calls are relative to the same domain
+  } else {
+    // In development, we need to specify the server URL with port
+    return `http://localhost:${devApiPort}`;
+  }
+};
+
 /**
  * Save component data to the server with automatic backup creation
  * @param {Object} data - The full component library data to save
@@ -8,7 +22,10 @@ import axios from "axios";
  */
 export const saveComponentData = async (data) => {
   try {
-    const response = await axios.post("/api/save-components", {
+    const baseUrl = getApiBaseUrl();
+    console.log(`Saving component data to: ${baseUrl}/api/save-components`);
+
+    const response = await axios.post(`${baseUrl}/api/save-components`, {
       data,
       createBackup: true,
     });
@@ -35,7 +52,10 @@ export const saveComponentData = async (data) => {
  */
 export const getBackupsList = async () => {
   try {
-    const response = await axios.get("/api/list-backups");
+    const baseUrl = getApiBaseUrl();
+    console.log(`Fetching backups from: ${baseUrl}/api/list-backups`);
+
+    const response = await axios.get(`${baseUrl}/api/list-backups`);
     return {
       success: true,
       backups: response.data.backups,
@@ -57,7 +77,10 @@ export const getBackupsList = async () => {
  */
 export const restoreFromBackup = async (backupName) => {
   try {
-    const response = await axios.post("/api/restore-backup", {
+    const baseUrl = getApiBaseUrl();
+    console.log(`Restoring from backup: ${baseUrl}/api/restore-backup`);
+
+    const response = await axios.post(`${baseUrl}/api/restore-backup`, {
       backupName,
     });
 

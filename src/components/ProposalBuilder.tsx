@@ -5,7 +5,6 @@ import { useProposalContext } from "../context/ProposalContext";
 import { usePricing } from "../hooks/usePricing";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
-import Header from "./layout/Header";
 import LibrarySelector from "./library/LibrarySelector";
 import ComponentLibrary from "./library/ComponentLibrary";
 import ProposalFrame from "./proposal/ProposalFrame";
@@ -13,6 +12,7 @@ import ProposalSummary from "./summary/ProposalSummary";
 import PreviewModal from "./modals/PreviewModal";
 import PublishModal from "./modals/PublishModal";
 import ConfirmationModal from "./modals/ConfirmationModal";
+import "../components/styles/admin.css";
 
 const ProposalBuilder: React.FC = () => {
   const {
@@ -81,20 +81,37 @@ const ProposalBuilder: React.FC = () => {
   };
 
   return (
-    <div className="proposal-builder min-h-screen flex flex-col bg-gray-100">
-      <Header />
+    <div className="component-editor">
+      <div className="editor-header" style={{ marginBottom: "20px" }}>
+        <h2>Proposal Builder</h2>
+        <p>
+          Create and customize proposals by adding components from the library
+        </p>
+      </div>
 
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-6">
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-            <LibrarySelector
-              selectedLibrary={selectedLibrary}
-              onChange={handleLibraryChange}
-            />
-          </div>
-
-          <div className="builder-layout flex flex-col md:flex-row gap-6 mt-6">
-            <ComponentLibrary />
+        <div className="container mx-auto px-4">
+          <div className="editor-layout three-column">
+            <div className="editor-sidebar">
+              <div className="panel-header">
+                <h3>Library Selection</h3>
+              </div>
+              <div className="library-selector-container">
+                <div className="form-group library-select-group">
+                  <label>Component Library:</label>
+                  <select
+                    value={selectedLibrary}
+                    onChange={handleLibraryChange}
+                    className="library-select"
+                  >
+                    <option value="ai-b-c">AI-B-C Programme</option>
+                    {/* Other libraries would be dynamically loaded here */}
+                  </select>
+                </div>
+                {/* "Add New Library" button removed as it's available in Editor */}
+              </div>
+              <ComponentLibrary />
+            </div>
             <ProposalFrame />
             <ProposalSummary
               onPreview={toggleProposalModal}

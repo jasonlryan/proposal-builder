@@ -1,7 +1,6 @@
 {
   "componentLibraries": {
     "ai-b-c": {
-      "id": "ai-b-c",
       "name": "AI-B-C Programme",
       "description": "AI capability and innovation programmes for leaders and teams",
       "components": [
@@ -182,26 +181,11 @@
               "name": "Contingency Rate",
               "type": "selection",
               "options": [
-                {
-                  "value": 0,
-                  "label": "None"
-                },
-                {
-                  "value": 0.05,
-                  "label": "5%"
-                },
-                {
-                  "value": 0.1,
-                  "label": "10%"
-                },
-                {
-                  "value": 0.15,
-                  "label": "15%"
-                },
-                {
-                  "value": 0.2,
-                  "label": "20%"
-                }
+                {"value": 0, "label": "None"},
+                {"value": 0.05, "label": "5%"},
+                {"value": 0.10, "label": "10%"},
+                {"value": 0.15, "label": "15%"},
+                {"value": 0.20, "label": "20%"}
               ],
               "default": 0
             }
@@ -227,7 +211,6 @@
       ]
     },
     "research-sprint": {
-      "id": "research-sprint",
       "name": "Research Sprint",
       "description": "Focused research activities to gather insights",
       "components": [
@@ -263,18 +246,9 @@
               "name": "Volume of Data to Review",
               "type": "selection",
               "options": [
-                {
-                  "value": 1,
-                  "label": "Small (1-5 documents)"
-                },
-                {
-                  "value": 1.5,
-                  "label": "Medium (6-15 documents)"
-                },
-                {
-                  "value": 2,
-                  "label": "Large (16+ documents)"
-                }
+                {"value": 1, "label": "Small (1-5 documents)"},
+                {"value": 1.5, "label": "Medium (6-15 documents)"},
+                {"value": 2, "label": "Large (16+ documents)"}
               ],
               "default": 1,
               "priceImpact": 800
@@ -383,22 +357,10 @@
               "name": "Participant Recruitment",
               "type": "selection",
               "options": [
-                {
-                  "value": 0,
-                  "label": "Use your own participants"
-                },
-                {
-                  "value": 1,
-                  "label": "100-250 participants"
-                },
-                {
-                  "value": 2,
-                  "label": "251-500 participants"
-                },
-                {
-                  "value": 3,
-                  "label": "501-1000 participants"
-                }
+                {"value": 0, "label": "Use your own participants"},
+                {"value": 1, "label": "100-250 participants"},
+                {"value": 2, "label": "251-500 participants"},
+                {"value": 3, "label": "501-1000 participants"}
               ],
               "default": 0,
               "priceImpact": 1500
@@ -516,26 +478,11 @@
               "name": "Contingency Rate",
               "type": "selection",
               "options": [
-                {
-                  "value": 0,
-                  "label": "None"
-                },
-                {
-                  "value": 0.05,
-                  "label": "5%"
-                },
-                {
-                  "value": 0.1,
-                  "label": "10%"
-                },
-                {
-                  "value": 0.15,
-                  "label": "15%"
-                },
-                {
-                  "value": 0.2,
-                  "label": "20%"
-                }
+                {"value": 0, "label": "None"},
+                {"value": 0.05, "label": "5%"},
+                {"value": 0.10, "label": "10%"},
+                {"value": 0.15, "label": "15%"},
+                {"value": 0.20, "label": "20%"}
               ],
               "default": 0
             }

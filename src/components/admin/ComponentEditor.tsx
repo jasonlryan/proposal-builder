@@ -5,7 +5,11 @@ import {
   createEmptySubElement,
 } from "../../utils/schema";
 import "../../components/styles/admin.css";
-import { saveComponentData, downloadComponentData } from "../../api/fileOps";
+import {
+  saveComponentData,
+  downloadComponentData,
+  getBackupsList,
+} from "../../api/fileOps";
 import BackupManager from "./BackupManager";
 
 interface Library {
@@ -62,6 +66,8 @@ const ComponentEditor: React.FC = () => {
     useState<number>(-1);
   const [showMetadataSection, setShowMetadataSection] =
     useState<boolean>(false);
+  const [showBackupModal, setShowBackupModal] = useState<boolean>(false);
+  const [backupsCount, setBackupsCount] = useState<number>(0);
 
   // Fetch component libraries from JSON file
   useEffect(() => {
@@ -109,6 +115,26 @@ const ComponentEditor: React.FC = () => {
       }
     }
   }, [selectedLibraryId, libraries]);
+
+  // Add a method to fetch backups count
+  useEffect(() => {
+    const fetchBackupsCount = async () => {
+      try {
+        const result = await getBackupsList();
+        if (result.success) {
+          setBackupsCount(result.backups.length);
+        }
+      } catch (error) {
+        console.error("Error fetching backups count:", error);
+      }
+    };
+
+    fetchBackupsCount();
+    // Set up a timer to periodically check for new backups
+    const intervalId = setInterval(fetchBackupsCount, 30000); // Check every 30 seconds
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleLibraryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLibraryId(e.target.value);
@@ -204,6 +230,12 @@ const ComponentEditor: React.FC = () => {
             result.backupCreated ? `Backup created: ${result.backupName}` : ""
           }`
         );
+
+        // Refresh backups count after successful save
+        const backupsResult = await getBackupsList();
+        if (backupsResult.success) {
+          setBackupsCount(backupsResult.backups.length);
+        }
       } else {
         // If server-side save fails, offer to download the file
         if (
@@ -723,17 +755,6 @@ const ComponentEditor: React.FC = () => {
         <p>Edit and manage component library definitions</p>
       </div>
 
-      <div className="file-instruction">
-        <p>
-          <strong>Note:</strong> Component data is loaded from{" "}
-          <code>/public/assets/component-libraries.json</code>.
-        </p>
-        <p>
-          In production, changes would be saved back to this file. For the
-          prototype, changes are only stored in memory.
-        </p>
-      </div>
-
       <div className="editor-layout three-column">
         {/* Left column - Component libraries and list */}
         <div className="editor-sidebar">
@@ -1157,7 +1178,7 @@ const ComponentEditor: React.FC = () => {
             </div>
           ) : (
             <div className="empty-preview-message">
-              Select or create a component to see a preview
+              <span>Select or create a component to see a preview</span>
             </div>
           )}
         </div>
@@ -1167,9 +1188,40 @@ const ComponentEditor: React.FC = () => {
         <strong>Tip:</strong> Use the Form View for a guided editing experience
         or JSON View for advanced editing. Component changes are only saved when
         you click "Save Changes".
+        {backupsCount > 0 && (
+          <button
+            className="restore-from-backup-btn"
+            onClick={() => setShowBackupModal(true)}
+          >
+            Restore from Backup ({backupsCount})
+          </button>
+        )}
       </div>
 
-      <BackupManager onRestoreComplete={handleRestoreData} />
+      {showBackupModal && (
+        <div className="modal-overlay">
+          <div className="modal-content backup-modal">
+            <div className="modal-header">
+              <h3>Backup Manager</h3>
+              <button
+                className="close-btn"
+                onClick={() => setShowBackupModal(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <BackupManager
+                onRestoreComplete={(restoredData) => {
+                  handleRestoreData(restoredData);
+                  setShowBackupModal(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {showSubElementModal && <SubElementModal />}
     </div>

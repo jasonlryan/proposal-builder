@@ -1,0 +1,126 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #f1f1f1;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  margin: 0;
+  color: #000;
+  letter-spacing: -0.5px;
+}
+
+.logo-divider {
+  margin: 0 0.75rem;
+  color: #bbb;
+  font-weight: 300;
+}
+
+.product-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0;
+  color: #0047FF;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.builder-nav {
+  display: flex;
+  align-items: center;
+}
+
+.builder-nav ul {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.builder-nav a {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.builder-nav a:hover {
+  color: #0047FF;
+}
+
+.builder-nav a.active {
+  color: #0047FF;
+  font-weight: 600;
+}
+
+.builder-nav a.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background-color: #0047FF;
+  border-radius: 2px;
+}
+
+.cart {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+}
+
+.cart-icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cart-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1rem;
+  }
+  
+  .builder-nav {
+    display: none;
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+  
+  .product-name {
+    font-size: 1rem;
+  }
+} 

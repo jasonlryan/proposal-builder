@@ -25,12 +25,11 @@ const ProposalSummary: React.FC<ProposalSummaryProps> = ({
   const total = calculateTotal();
 
   return (
-    <div className="proposal-summary w-full md:w-1/3 lg:w-1/4 bg-white rounded-lg shadow-md p-4">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">
-        Proposal Summary
-      </h2>
-
-      <div className="summary-content">
+    <div className="preview-panel">
+      <div className="panel-header">
+        <h3>Proposal Summary</h3>
+      </div>
+      <div className="summary-content p-4">
         <div className="components-list mb-4">
           <h3 className="text-sm font-medium text-gray-700 mb-2">
             Selected Components:
