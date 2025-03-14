@@ -3,18 +3,43 @@ import {
   useProposalContext,
   ProposalSubElement,
 } from "../../context/ProposalContext";
+import { usePricing } from "../../hooks/usePricing";
 
 interface SubElementConfigProps {
   instanceId: string;
   subElement: ProposalSubElement;
+  showPrice?: boolean;
 }
 
 const SubElementConfig: React.FC<SubElementConfigProps> = ({
   instanceId,
   subElement,
+  showPrice = false,
 }) => {
   const { updateSubElementValue, incrementSubElement, decrementSubElement } =
     useProposalContext();
+  const { formatCurrency } = usePricing();
+
+  // Calculate price impact for this sub-element
+  const calculatePriceImpact = () => {
+    if (!subElement.priceImpact) return 0;
+
+    if (subElement.type === "boolean" && subElement.value) {
+      return subElement.priceImpact;
+    } else if (subElement.type === "quantity" && subElement.value) {
+      return subElement.priceImpact * (subElement.value || 0);
+    } else if (subElement.type === "selection" && subElement.value) {
+      if (typeof subElement.value === "number" && subElement.value > 0) {
+        return subElement.priceImpact * subElement.value;
+      } else {
+        return subElement.priceImpact;
+      }
+    }
+    return 0;
+  };
+
+  const priceImpact = calculatePriceImpact();
+  const hasPriceImpact = priceImpact > 0;
 
   // Render different input types based on sub-element type
   const renderInputControl = () => {
@@ -125,13 +150,27 @@ const SubElementConfig: React.FC<SubElementConfigProps> = ({
 
   return (
     <div className="sub-element-config flex justify-between items-center p-2 bg-gray-50 rounded">
-      <label
-        htmlFor={`${instanceId}-${subElement.id}`}
-        className="text-sm text-gray-700"
-      >
-        {subElement.name}
-      </label>
-      {renderInputControl()}
+      <div className="flex flex-grow justify-between items-center">
+        <label
+          htmlFor={`${instanceId}-${subElement.id}`}
+          className="text-sm text-gray-700"
+        >
+          {subElement.name}
+          {showPrice && hasPriceImpact && (
+            <span
+              style={{
+                marginLeft: "0.5rem",
+                fontSize: "0.75rem",
+                color: "var(--bn-blue)",
+                fontWeight: "500",
+              }}
+            >
+              (+{formatCurrency(priceImpact)})
+            </span>
+          )}
+        </label>
+        {renderInputControl()}
+      </div>
     </div>
   );
 };

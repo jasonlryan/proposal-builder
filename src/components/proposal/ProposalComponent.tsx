@@ -16,6 +16,14 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
 
   const componentPrice = calculateComponentPrice(component);
 
+  // Get sub-elements that affect price
+  const priceElements = component.subElements.filter(
+    (sub) =>
+      (sub.type === "boolean" && sub.value && sub.priceImpact) ||
+      (sub.type === "quantity" && sub.value && sub.value > 0) ||
+      (sub.type === "selection" && sub.value)
+  );
+
   return (
     <div
       className="proposal-component"
@@ -57,15 +65,17 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span
+          <div
             style={{
-              color: "var(--bn-blue)",
-              fontWeight: 500,
+              textAlign: "right",
               marginRight: "1rem",
+              fontWeight: 500,
             }}
           >
-            {formatCurrency(componentPrice)}
-          </span>
+            <div style={{ color: "var(--bn-blue)" }}>
+              {formatCurrency(componentPrice)}
+            </div>
+          </div>
           <button
             onClick={() => removeComponent(component.instanceId)}
             style={{
@@ -110,6 +120,7 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
             key={subElement.id}
             instanceId={component.instanceId}
             subElement={subElement}
+            showPrice={true}
           />
         ))}
       </div>
