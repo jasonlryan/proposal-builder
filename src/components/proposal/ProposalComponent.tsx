@@ -17,6 +17,7 @@ const ProposalComponent: React.FC<ProposalComponentProps> = ({ component }) => {
   const componentPrice = calculateComponentPrice(component);
 
   // Get sub-elements that affect price
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const priceElements = component.subElements.filter(
     (sub) =>
       (sub.type === "boolean" && sub.value && sub.priceImpact) ||

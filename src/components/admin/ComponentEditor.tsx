@@ -68,6 +68,7 @@ const ComponentEditor: React.FC = () => {
     useState<boolean>(false);
   const [showBackupModal, setShowBackupModal] = useState<boolean>(false);
   const [backupsCount, setBackupsCount] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [originalComponent, setOriginalComponent] =
     useState<ComponentSchema | null>(null);
 

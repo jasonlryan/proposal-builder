@@ -126,6 +126,7 @@ const ProposalSummary: React.FC<ProposalSummaryProps> = ({
                       (sub) => sub.id === "hours"
                     );
 
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     if (hoursElement?.hasVolumeDiscount && hoursElement.value) {
                       const hours = hoursElement.value || 0;
                       const hourlyRate = hoursElement.priceImpact;
