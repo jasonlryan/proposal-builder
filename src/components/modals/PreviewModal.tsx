@@ -33,7 +33,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
 
   // Function to calculate price impact for each subelement
   const calculateSubElementPrice = (component: any, subElement: any) => {
-    if (!subElement.priceImpact) return 0;
+    if (!subElement.priceImpact && subElement.priceImpact !== 0) return 0;
 
     if (subElement.type === "quantity" && subElement.value) {
       let itemPrice = subElement.priceImpact * (subElement.value || 0);
@@ -60,7 +60,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
     } else if (
       subElement.type === "selection" &&
       subElement.value &&
-      subElement.priceImpact
+      (subElement.priceImpact || subElement.priceImpact === 0)
     ) {
       // For selections with multipliers
       if (typeof subElement.value === "number" && subElement.value > 0) {
@@ -70,6 +70,55 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
       }
     }
     return 0;
+  };
+
+  // Function to get discount information for Power Hour
+  const getPowerHourDiscount = (component: any, subElement: any) => {
+    if (
+      component.baseId === "powerHour" &&
+      subElement.id === "hours" &&
+      subElement.hasVolumeDiscount &&
+      subElement.value
+    ) {
+      const hours = subElement.value || 0;
+      const fullPrice = subElement.priceImpact * hours;
+      const discountedPrice = calculateSubElementPrice(component, subElement);
+      const discountAmount = fullPrice - discountedPrice;
+
+      if (hours >= 10) {
+        return {
+          percentage: "10%",
+          amount: discountAmount || 0,
+          applied: true,
+        };
+      } else if (hours >= 5) {
+        return {
+          percentage: "5%",
+          amount: discountAmount || 0,
+          applied: true,
+        };
+      }
+    }
+
+    return { applied: false, amount: 0, percentage: "" };
+  };
+
+  // Function to check if a subelement should be shown (either has price impact or is active)
+  const shouldShowSubElement = (component: any, subElement: any) => {
+    // Show elements with price impact
+    const price = calculateSubElementPrice(component, subElement);
+    if (price > 0) return true;
+
+    // Also show active boolean elements even if they don't have price impact
+    if (subElement.type === "boolean" && subElement.value) return true;
+
+    // Show quantity elements with non-zero values
+    if (subElement.type === "quantity" && subElement.value > 0) return true;
+
+    // Show selection elements with non-empty values
+    if (subElement.type === "selection" && subElement.value) return true;
+
+    return false;
   };
 
   return (
@@ -137,12 +186,9 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
                   // Get price breakdown
                   const componentPrice = calculateComponentPrice(component);
 
-                  // Get active sub elements with their prices
+                  // Get active sub elements that should be shown
                   const activeSubElements = component.subElements.filter(
-                    (sub) => {
-                      const price = calculateSubElementPrice(component, sub);
-                      return price > 0;
-                    }
+                    (sub) => shouldShowSubElement(component, sub)
                   );
 
                   return (
@@ -157,71 +203,89 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ onClose, onDownload }) => {
                         {component.description}
                       </p>
 
-                      {/* Simplified configuration - only show selected/non-zero values */}
-                      {activeSubElements.length > 0 && (
-                        <div className="mt-2">
-                          <h4 className="text-sm font-medium mb-1">
-                            Configuration & Price:
-                          </h4>
-                          <div className="border-t pt-2">
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Base Price:</span>
-                              <span className="font-medium">
-                                {formatCurrency(component.basePrice)}
-                              </span>
-                            </div>
+                      {/* Always show configuration section */}
+                      <div className="mt-2">
+                        <h4 className="text-sm font-medium mb-1">
+                          Configuration & Price:
+                        </h4>
+                        <div className="border-t pt-2">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Base Price:</span>
+                            <span className="font-medium">
+                              {formatCurrency(component.basePrice)}
+                            </span>
+                          </div>
 
-                            {activeSubElements.map((sub) => {
-                              const price = calculateSubElementPrice(
-                                component,
-                                sub
+                          {activeSubElements.map((sub) => {
+                            const price = calculateSubElementPrice(
+                              component,
+                              sub
+                            );
+
+                            // Check if this is a Power Hour component with discount
+                            const discount = getPowerHourDiscount(
+                              component,
+                              sub
+                            );
+
+                            let valueDisplay = "";
+                            if (sub.type === "boolean") {
+                              valueDisplay = "";
+                            } else if (
+                              sub.type === "selection" &&
+                              sub.options
+                            ) {
+                              const option = sub.options.find(
+                                (opt) => opt.value === sub.value
                               );
+                              valueDisplay = option ? ` (${option.label})` : "";
+                            } else if (sub.type === "quantity") {
+                              valueDisplay = ` (${sub.value})`;
+                            }
 
-                              // Only show addons with price impact
-                              if (price <= 0) return null;
-
-                              let valueDisplay = "";
-                              if (sub.type === "boolean") {
-                                valueDisplay = "";
-                              } else if (
-                                sub.type === "selection" &&
-                                sub.options
-                              ) {
-                                const option = sub.options.find(
-                                  (opt) => opt.value === sub.value
-                                );
-                                valueDisplay = option
-                                  ? ` (${option.label})`
-                                  : "";
-                              } else if (sub.type === "quantity") {
-                                valueDisplay = ` (${sub.value})`;
-                              }
-
-                              return (
-                                <div
-                                  key={sub.id}
-                                  className="flex justify-between text-sm"
-                                >
+                            return (
+                              <React.Fragment key={sub.id}>
+                                <div className="flex justify-between text-sm">
                                   <span>
                                     {sub.name}
                                     {valueDisplay}:
                                   </span>
-                                  <span className="font-medium text-blue-600">
-                                    +{formatCurrency(price)}
+                                  <span
+                                    className={
+                                      price > 0
+                                        ? "font-medium text-blue-600"
+                                        : "font-medium"
+                                    }
+                                  >
+                                    {price > 0
+                                      ? `+${formatCurrency(price)}`
+                                      : "Included"}
                                   </span>
                                 </div>
-                              );
-                            })}
 
-                            <div className="flex justify-between mt-2 pt-2 border-t">
-                              <span className="font-semibold">Total:</span>
-                              <span className="font-bold text-base">
-                                {formatCurrency(componentPrice)}
-                              </span>
-                            </div>
+                                {/* Display discount information if applicable */}
+                                {discount.applied && (
+                                  <div className="flex justify-between text-sm text-green-600 pl-4">
+                                    <span>
+                                      Volume discount ({discount.percentage}):
+                                    </span>
+                                    <span>
+                                      -{formatCurrency(discount.amount)}
+                                    </span>
+                                  </div>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+
+                          <div className="flex justify-between mt-2 pt-2 border-t">
+                            <span className="font-semibold">Total:</span>
+                            <span className="font-bold text-base">
+                              {formatCurrency(componentPrice)}
+                            </span>
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}

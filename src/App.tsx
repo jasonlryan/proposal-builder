@@ -5,6 +5,7 @@ import { ProposalProvider } from "./context/ProposalContext";
 import ProposalBuilder from "./components/ProposalBuilder";
 import AdminRoute from "./components/admin/AdminRoute";
 import Header from "./components/Header";
+import HelpCenter from "./components/HelpCenter";
 import "./App.css";
 
 function App() {
@@ -18,31 +19,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<ProposalBuilder />} />
                 <Route path="/admin" element={<AdminRoute />} />
-                {/* Additional routes can be added here */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <div className="page-placeholder">
-                      Dashboard Coming Soon
-                    </div>
-                  }
-                />
-                <Route
-                  path="/templates"
-                  element={
-                    <div className="page-placeholder">
-                      Templates Coming Soon
-                    </div>
-                  }
-                />
-                <Route
-                  path="/help"
-                  element={
-                    <div className="page-placeholder">
-                      Help Center Coming Soon
-                    </div>
-                  }
-                />
+                {/* Using the actual HelpCenter component */}
+                <Route path="/help" element={<HelpCenter />} />
               </Routes>
             </ProposalProvider>
           </LibraryProvider>

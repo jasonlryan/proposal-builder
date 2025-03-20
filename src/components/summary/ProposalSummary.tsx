@@ -13,6 +13,7 @@ const ProposalSummary: React.FC<ProposalSummaryProps> = ({
 }) => {
   const { selectedComponents } = useProposalContext();
   const {
+    calculateComponentPrice,
     calculateSubtotal,
     calculateContingency,
     calculateTotal,
@@ -23,6 +24,74 @@ const ProposalSummary: React.FC<ProposalSummaryProps> = ({
   const subtotal = calculateSubtotal();
   const contingency = calculateContingency();
   const total = calculateTotal();
+
+  // Calculate total Power Hour discounts
+  const calculatePowerHourDiscounts = () => {
+    let totalDiscount = 0;
+
+    // Find Power Hour components
+    const powerHourComponents = selectedComponents.filter(
+      (component) => component.baseId === "powerHour"
+    );
+
+    // Calculate discounts for each Power Hour component
+    powerHourComponents.forEach((component) => {
+      const hoursElement = component.subElements.find(
+        (sub) => sub.id === "hours"
+      );
+
+      if (hoursElement?.hasVolumeDiscount && hoursElement.value) {
+        const hours = hoursElement.value || 0;
+        const fullPrice = hoursElement.priceImpact * hours;
+
+        // Get the actual price with discount applied
+        const subElements = component.subElements.filter(
+          (s) => s.id !== "hours"
+        );
+        let actualComponentPrice = component.basePrice;
+
+        // Add other sub-element prices
+        subElements.forEach((sub) => {
+          if (sub.type === "boolean" && sub.value && sub.priceImpact) {
+            actualComponentPrice += sub.priceImpact;
+          } else if (sub.type === "quantity" && sub.value && sub.priceImpact) {
+            actualComponentPrice += sub.priceImpact * sub.value;
+          } else if (sub.type === "selection" && sub.value && sub.priceImpact) {
+            if (typeof sub.value === "number" && sub.value > 0) {
+              actualComponentPrice += sub.priceImpact * sub.value;
+            } else {
+              actualComponentPrice += sub.priceImpact;
+            }
+          }
+        });
+
+        // Calculate hours price with discount
+        let hoursPriceWithDiscount = hoursElement.priceImpact * hours;
+        if (hours >= 10) {
+          // 10% discount
+          hoursPriceWithDiscount *= 0.9;
+        } else if (hours >= 5) {
+          // 5% discount
+          hoursPriceWithDiscount *= 0.95;
+        }
+
+        // Add hours price with discount
+        actualComponentPrice += hoursPriceWithDiscount;
+
+        // Calculate total component price without discount
+        const fullComponentPrice = component.basePrice + fullPrice;
+
+        // Calculate discount
+        const discount = fullComponentPrice - actualComponentPrice;
+        totalDiscount += discount;
+      }
+    });
+
+    return totalDiscount;
+  };
+
+  const powerHourDiscount = calculatePowerHourDiscounts();
+  const hasPowerHourDiscount = powerHourDiscount > 0;
 
   return (
     <div className="preview-panel">
@@ -45,19 +114,61 @@ const ProposalSummary: React.FC<ProposalSummaryProps> = ({
                   (c) =>
                     c.baseId !== "contingency" && c.baseId !== "genericInfo"
                 )
-                .map((component) => (
-                  <li
-                    key={component.instanceId}
-                    className="flex justify-between"
-                  >
-                    <span>{component.name}</span>
-                  </li>
-                ))}
+                .map((component) => {
+                  const price = calculateComponentPrice(component);
+                  const isPowerHour = component.baseId === "powerHour";
+
+                  // Calculate full price before discount for Power Hour
+                  let displayPrice = price;
+
+                  if (isPowerHour) {
+                    const hoursElement = component.subElements.find(
+                      (sub) => sub.id === "hours"
+                    );
+
+                    if (hoursElement?.hasVolumeDiscount && hoursElement.value) {
+                      const hours = hoursElement.value || 0;
+                      const hourlyRate = hoursElement.priceImpact;
+
+                      // Calculate the discount amount
+                      let discountPercentage = 0;
+                      if (hours >= 10) {
+                        discountPercentage = 0.1; // 10%
+                      } else if (hours >= 5) {
+                        discountPercentage = 0.05; // 5%
+                      }
+
+                      if (discountPercentage > 0) {
+                        // Add back the discount to get the full price
+                        const hoursCost = hourlyRate * hours;
+                        const hoursDiscount = hoursCost * discountPercentage;
+                        displayPrice = price + hoursDiscount;
+                      }
+                    }
+                  }
+
+                  return (
+                    <li
+                      key={component.instanceId}
+                      className="flex justify-between mb-1"
+                    >
+                      <span>{component.name}</span>
+                      <span>{formatCurrency(displayPrice)}</span>
+                    </li>
+                  );
+                })}
             </ul>
           )}
         </div>
 
         <div className="pricing-summary space-y-2 border-t pt-4">
+          {hasPowerHourDiscount && (
+            <div className="flex justify-between text-sm text-green-600">
+              <span>Power Hour volume discount:</span>
+              <span>-{formatCurrency(powerHourDiscount)}</span>
+            </div>
+          )}
+
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Subtotal:</span>
             <span className="font-medium">{formatCurrency(subtotal)}</span>

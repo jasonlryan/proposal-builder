@@ -13,7 +13,7 @@
   --bn-white: #FFFFFF;
   --bn-blue-hover: #0038CC;
   --bn-blue-light: rgba(0, 71, 255, 0.1);
-  --page-padding: 1.5rem; /* Consistent padding variable */
+  --page-padding: 1rem; /* Reduced padding from 1.5rem */
   --app-bg: #dedfe3; /* Darker background color for the app */
 }
 
@@ -34,7 +34,7 @@
 
 .editor-header {
   /* Use consistent padding variable */
-  padding: var(--page-padding);
+  padding: 0.75rem var(--page-padding); /* Reduced padding */
   border-bottom: 1px solid var(--border-color);
   background-color: var(--header-bg);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -44,15 +44,15 @@
 
 .editor-header h2 {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.5rem; /* Smaller font size */
   font-weight: 700;
   color: var(--bn-black);
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* Reduced margin */
   letter-spacing: -0.5px;
 }
 
 .editor-header p {
-  margin: 0.25rem 0 0;
+  margin: 0;
   font-size: 0.875rem;
   color: #64748b;
 }
@@ -69,20 +69,20 @@
   overflow: hidden;
   /* Remove margin to ensure alignment with header */
   margin: 0;
-  gap: 1.5rem;
-  max-height: calc(100vh - 250px);
-  padding-top: var(--page-padding);
+  gap: 1rem; /* Reduced gap */
+  max-height: calc(100vh - 180px); /* Less space reserved for header */
+  padding-top: 0.75rem; /* Reduced padding */
 }
 
 .editor-layout.three-column {
   display: grid;
   grid-template-columns: 280px 1fr 280px;
-  gap: 25px;
-  height: calc(100vh - 260px) !important;
-  min-height: calc(100vh - 260px) !important;
-  max-height: calc(100vh - 260px) !important;
+  gap: 20px; /* Reduced gap */
+  height: calc(100vh - 120px) !important; /* Less space reserved for header */
+  min-height: calc(100vh - 120px) !important;
+  max-height: calc(100vh - 120px) !important;
   margin: 0;
-  padding-top: var(--page-padding);
+  padding-top: 0.75rem; /* Reduced padding */
   padding-bottom: 0;
   overflow: hidden !important;
 }
@@ -1157,9 +1157,9 @@
   display: grid;
   grid-template-columns: 280px 1fr 280px;
   gap: 25px;
-  height: calc(100vh - 260px) !important;
-  min-height: calc(100vh - 260px) !important;
-  max-height: calc(100vh - 260px) !important;
+  height: calc(100vh - 160px) !important;
+  min-height: calc(100vh - 160px) !important;
+  max-height: calc(100vh - 160px) !important;
   margin: 0;
   padding-top: var(--page-padding);
   padding-bottom: 0;
@@ -1617,7 +1617,7 @@ main.flex-grow {
   display: flex;
   flex-direction: column;
   min-height: 50vh;
-  max-height: calc(100vh - 280px);
+  max-height: calc(100vh - 250px) !important;
   overflow-y: auto !important;
   padding-bottom: 5rem !important; /* Extra padding at bottom to show space for new components */
   -webkit-overflow-scrolling: touch;
@@ -1739,4 +1739,40 @@ main.flex-grow {
   margin-top: 0.5rem;
   font-style: italic;
   line-height: 1.4;
+}
+
+/* Fix for scrolling issues */
+.proposal-content,
+.component-items,
+.preview-component,
+.library-components,
+.selected-components,
+.form-editor {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Fix for container heights */
+.proposal-content {
+  height: calc(100vh - 250px) !important;
+  max-height: calc(100vh - 250px) !important;
+  overflow-y: auto !important;
+}
+
+.selected-components {
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+}
+
+/* Fix for editor sidebars */
+.editor-sidebar,
+.editor-main,
+.preview-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 } 

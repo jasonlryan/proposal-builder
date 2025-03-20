@@ -71,10 +71,9 @@ const ProposalFrame: React.FC = () => {
           transition: "all 0.2s",
           backgroundColor: isDragOver ? "#EFF6FF" : "#FFFFFF",
           border: isDragOver ? "2px dashed #3B82F6" : "2px dashed #E5E7EB",
-          minHeight: "calc(100vh - 280px)",
-          padding: "1rem",
           borderRadius: "0.5rem",
           margin: "1rem",
+          padding: "1rem",
         }}
       >
         {selectedComponents.length === 0 ? (
@@ -96,16 +95,7 @@ const ProposalFrame: React.FC = () => {
             )}
           </div>
         ) : (
-          <div
-            className="selected-components"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              overflowY: "auto",
-              maxHeight: "calc(100vh - 360px)",
-            }}
-          >
+          <div className="selected-components">
             {selectedComponents.map((component) => (
               <ProposalComponent
                 key={component.instanceId}
